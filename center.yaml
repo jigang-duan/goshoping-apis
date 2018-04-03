@@ -1,0 +1,366 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "总台 APIs"
+  description: "店铺小程序的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "api.center.shop.com"
+basePath: /v1
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: Auth
+   description: 身份认证
+ - name: Shop
+   description: 店铺管理
+
+paths:
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: 用户登录
+      description: 使用用户名和密码登录，获取Token
+      operationId: signIn
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: 用户注册
+      description: 使用用户名和密码登录
+      operationId: signUp
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signout:
+    delete:
+      tags:
+        - Auth
+      summary: 用户登出
+      description: 撤销Token
+      responses:
+        204:
+          description: 登出成功
+  /auth/password:
+    put:
+      tags:
+        - Auth
+      summary: 修改密码
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/PasswordRequest'
+      responses:
+        201:
+          description: 成功
+  /auth/token:
+    put:
+      tags:
+        - Auth
+      summary: 刷新Token
+      parameters:
+        - in: body
+          name: refresh_token
+          required: true
+          schema:
+            $ref: '#/definitions/RefreshToken'
+      responses:
+        201:
+          description: 成功
+  /shops:
+    get:
+      tags:
+        - Shop
+      summary: 获取店铺列表
+      responses:
+        200:
+          description: 所有可用的分类的数组
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ShopDetailsResponse'
+    post:
+      tags:
+        - Shop
+      summary: 创建店铺
+      description: 创建店铺，获取ShopID
+      parameters:
+        - in: body
+          name: shopRequest
+          required: true
+          schema:
+            $ref: '#/definitions/CreateShopRequest'
+      responses:
+        201:
+          description: 成功
+          schema:
+            $ref: '#/definitions/CreateShopResponse'
+  /shops/{shopID}:
+    parameters:
+      - name: shopID
+        in: path
+        description: ShopID.
+        required: true
+        type: string
+    get:
+      tags:
+        - Shop
+      summary: 获取店铺详情
+      responses:
+        200:
+          description: 店铺详情
+          schema:
+            $ref: '#/definitions/ShopDetails'
+    put:
+      tags:
+        - Shop
+      summary: 修改店铺详情
+      parameters:
+        - in: body
+          name: details
+          required: true
+          schema:
+            $ref: '#/definitions/ShopDetails'
+      responses:
+        201:
+          description: 成功
+    delete:
+      tags:
+        - Shop
+      summary: 删除店铺
+      responses:
+        201:
+          description: 成功
+
+definitions:
+  GeneralError:
+    description: 错误通用类型
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 400
+      detail:
+        type: string
+        example: "none available"
+        description: 错误描述
+      status:
+        type: string
+        example: "Internal Server Error"
+        description: 错误原因
+
+  AuthRequest:
+    type: object
+    description: '登录或注册'
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+        format: password
+  Token:
+    type: object
+    description: 'JWT Token'
+    properties:
+      access_token:
+        type: string
+        example: 访问Token
+      refresh_token:
+        type: string
+        example: 刷新Token
+      expires_at:
+        type: integer
+        example: 过期日期
+      scopes:
+        type: array
+        items:
+          type: string
+          example: FOO
+      metadata:
+        type: object
+        additionalProperties:
+          type: string
+          example:
+            aurh: AURH_READ
+  PasswordRequest:
+    type: object
+    description: 修改密码
+    properties:
+      old:
+        type: string
+      new:
+        type: string
+  RefreshToken:
+    type: string
+  CreateShopRequest:
+    $ref: '#/definitions/ShopDetails'
+      
+  CreateShopResponse:
+    type: object
+    properties:
+      shop_id:
+        type: string
+        format: uuid
+        description: X-SHOP-ID
+      create_at:
+        type: integer
+        format: int64
+        description: 创建时间
+
+  ShopDetailsResponse:
+    type: object
+    properties:
+      shop_id:
+        type: string
+        format: uuid
+        description: X-SHOP-ID
+      details:
+        $ref: '#/definitions/ShopDetails'
+
+  ShopDetails:
+    type: object
+    properties:
+      name:
+        type: string
+        description: 店铺名字
+      create_at:
+        type: integer
+        format: int64
+        description: 创建时间
+      modified_at:
+        type: integer
+        format: int64
+        description: 修改时间
+      logo:
+        type: string
+        format: uri
+        description: logo图片URL
+      introduce:
+        type: string
+        description: 店铺介绍
+      period_at:
+        type: integer
+        format: int64
+        description: 到期时间
+      owner:
+        $ref: '#/definitions/ShopOwner'
+      miniapp:
+        $ref: '#/definitions/MiniApp'
+      physical:
+        $ref: '#/definitions/PhysicalStore'
+  ShopOwner:
+    type: object
+    description: 店铺所有者
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+  PhysicalStore:
+    type: object
+    description: 实体店
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+        description: 实体店名字
+      contact:
+        type: string
+        description: 联系方式(电话号码)
+      email:
+        type: string
+        format: email
+        description: 邮箱
+      zipCode:
+        type: string
+        description: 邮编
+      address:
+        type: string
+        description: 地址
+      location:
+        type: object
+        description: 地理位置
+        $ref: '#/definitions/Location'
+
+  MiniApp:
+    type: object
+    description: 微信小程序
+    properties:
+      id:
+        type: string
+        description: bsonID
+      wechat_id:
+        type: string
+        description: 微信号
+
+  Location:
+    type: object
+    description: 经纬度
+    properties:
+      latitude:
+        type: number
+        format: double
+        description: 经度
+      longitude:
+        type: number
+        format: double
+        description: 经度
+     
+
+security:
+  - bearerAuth: []
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: JWT token
+

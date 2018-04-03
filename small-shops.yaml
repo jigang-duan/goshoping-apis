@@ -1,0 +1,650 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "店铺小程序 APIs"
+  description: "店铺小程序的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "api.small.shop.com"
+basePath: /v1
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: Shop
+   description: 店铺管理
+ - name: Taxons
+   description: 分类
+ - name: Products
+   description: 产品
+ - name: Auth
+   description: 身份认证
+
+paths:
+  /shop/me:
+    get:
+      tags:
+        - Shop
+      summary: 获取店铺详情
+      responses:
+        200:
+          description: 店铺详情
+          schema:
+            $ref: '#/definitions/ShopDetails'
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: 用户登录
+      description: 使用用户名和密码登录，获取Token
+      operationId: signIn
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: 用户注册
+      description: 使用用户名和密码登录
+      operationId: signUp
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signout:
+    delete:
+      tags:
+        - Auth
+      summary: 用户登出
+      description: 撤销Token
+      responses:
+        204:
+          description: 登出成功
+  /auth/password:
+    put:
+      tags:
+        - Auth
+      summary: 修改密码
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/PasswordRequest'
+      responses:
+        201:
+          description: 成功
+  /auth/token:
+    put:
+      tags:
+        - Auth
+      summary: 刷新Token
+      parameters:
+        - in: body
+          name: refresh_token
+          required: true
+          schema:
+            $ref: '#/definitions/RefreshToken'
+      responses:
+        201:
+          description: 成功
+  /taxons:
+    get:
+      tags:
+        - "Taxons"
+      summary: 分类列表
+      description: "所有可用的分类的数组及其所有子分类"
+      operationId: "taxonTree"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 所有可用的分类的数组
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Taxon'
+  /taxon-products/{taxonCode}:
+    get:
+      tags:
+        - Products
+      summary: 显示分类下的产品
+      description: 指定分类的产品列表
+      operationId: productCatalog
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: taxonCode
+          in: path
+          description: 分类code
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: 预期产品的数量
+          required: false
+          type: integer
+        - name: start
+          in: query
+          description: 起始位置
+          required: false
+          type: integer
+      responses:
+        200:
+          description: 分类下产品的数组
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProductsPage'
+  /products/{spu}:
+    get:
+      tags:
+        - Products
+      summary: 获取产品
+      description: 返回给定spu的产品
+      operationId: productDetails
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: spu
+          in: path
+          description: 预期产品的spu.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: spu产品信息
+          schema:
+            $ref: '#/definitions/Product'
+  /product/{spu}/reviews:
+    parameters:
+      - name: spu
+        in: path
+        description: 预期产品的SPU.
+        required: true
+        type: string
+    post:
+      tags:
+        - Products
+      summary: 添加对产品的评论.
+      description: 允许您为产品添加一个新的评论。请记住，在评论列表中可用之前，管理员应该接受它.
+      operationId: productAddReview
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/Reviews'
+      responses:
+        '201':
+          description: 已经添加到产品中了.
+        '400':
+          description: '无效输入,验证失败'
+          schema:
+            $ref: '#/definitions/GeneralError'
+    get:
+      tags:
+        - Products
+      summary: 显示评论
+      description: 这个端点将返回一个分页的所有与由slug识别的产品相关的所有评论的列表.
+      operationId: productReviews
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ProductReviewsPage'
+
+
+definitions:
+  GeneralError:
+    description: 错误通用类型
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 400
+      detail:
+        type: string
+        example: "none available"
+        description: 错误描述
+      status:
+        type: string
+        example: "Internal Server Error"
+        description: 错误原因
+  Image:
+    description: 图片
+    type: object
+    properties:
+      code:
+        type: string
+        example: thumbnail
+      path:
+        type: string
+        example: /uo/mug.jpg
+  Taxon:
+    description: 分类
+    type: object
+    properties:
+      code:
+        type: string
+        example: BREAD_CODE
+      name:
+        type: string
+        example: 面包
+      description:
+        type: string
+        example: 好吃的面包们都在这儿了
+      images:
+        type: array
+        items: 
+          $ref: '#/definitions/Image'
+      children:
+        type: array
+        description: "子分类"
+        items:
+          $ref: '#/definitions/Taxon'
+  ProductTaxon:
+    type: object
+    description: "一个商品可以属于多种分类，只有一个主分类"
+    properties:
+      main:
+        type: string
+        example: MAIN_TAXON_CODE
+        description: "主分类"
+      others:
+        type: array
+        items:
+          type: string
+          example: OTHER_TAXON_CODE
+          description: "其它分类"
+  Page:
+    type: object
+    description: 通用页对象.
+    properties:
+      start:
+        description: 起始位置
+        type: integer
+        example: 1
+      limit:
+        description: 预期产品的数量
+        type: integer
+        example: 10
+      total:
+        description: 所有分页资源的数量.
+        type: integer
+        example: 25
+      _links:
+        type: object
+        properties:
+          self:
+            description: 链接到当前页
+            type: integer
+            example: /some-path?start=1&limit=10
+          first:
+            description: 链接到第一个页
+            type: string
+            example: /some-path?start=1&limit=10
+          last:
+            description: 链接到最后一页
+            type: string
+            example: /some-path?start=1&limit=10
+          next:
+            description: 链接到下一页
+            type: string
+            example: /some-path?start=1&limit=10
+  Product:
+    type: object
+    description: 产品的基本信息、变体、属性、关联和图像.
+    properties:
+      spu:
+        type: string
+        example: LOGAN_MUG_SPU
+        description: 产品SPU(标准化产品单元)
+      name:
+        type: string
+        example: Logan Mug
+        description: 产品名称
+      averageRating:
+        type: integer
+        description: 平均评分
+        example: 4.5
+      taxons:
+        $ref: '#/definitions/ProductTaxon'
+      variants:
+        $ref: '#/definitions/OptionVariants'
+      attributes:
+        type: array
+        items:
+          $ref: '#/definitions/Attribute'
+      associations:
+        description: 关联的产品
+        type: array
+        items:
+          $ref: '#/definitions/AssociationProduct'
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+  AssociationProduct:
+    type: object
+    description: 关联的产品
+    properties:
+      name: 
+        type: string
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+  Option:
+    type: object
+    description: 选项
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      nameOption:
+        type: string
+  OptionVariants:
+    type: object
+    description: 可选项组合的变体
+    properties:
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/Option'
+      ovs:
+        type: array
+        items:
+          $ref: "#/definitions/Variant"
+  Variant:
+    type: object
+    description: 简单产品的SPU和变体的SKU是一样的。若有不同的产品选项，该产品可以有不同的变体列表
+    properties:
+      sku:
+        type: string
+        example: LOGAN_MUG_SKU
+        description: 产品SKU(库存量单位)
+      name:
+        type: string
+        example: 洛根的杯子
+      axis:
+        type: array
+        description: 相关产品选项的列表
+        items:
+          type: string
+          example: HAT_SIZE_S
+      price:
+        $ref: '#/definitions/Price'
+      stock:
+        type: integer
+        description: 库存量
+        example: 100
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+  Price:
+    type: object
+    properties:
+      current:
+        description: 结算价格。价格是作为整数存储的，所以默认情况下，它应该除以100.
+        type: integer
+        example: 1000
+      currency:
+        type: string
+        example: CNY
+  Attribute:
+    type: object
+    description: 产品属性
+    properties:
+      code:
+        type: string
+        example: MUG_MATERIAL_CODE
+      name:
+        type: string
+        example: 杯子的材料
+      value:
+        type: string
+        example: 木材
+  ProductsPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+  Reviews:
+    type: object
+    description: 评论提交数据
+    required:
+      - title
+      - rating
+      - comment
+      - author
+    properties:
+      title:
+        type: string
+        example: 很棒的产品
+      rating:
+        type: integer
+        example: 5
+      comment:
+        type: string
+        example: 如果我是一个杯子，我想要像这个一样!
+      author:
+        type: string
+        description: 作者
+        example: 逗你玩儿
+  ProductReviewsPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Reviews'
+  AuthRequest:
+    type: object
+    description: '登录或注册'
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  Token:
+    type: object
+    description: 'JWT Token'
+    properties:
+      access_token:
+        type: string
+        example: 访问Token
+      refresh_token:
+        type: string
+        example: 刷新Token
+      expires_at:
+        type: integer
+        example: 过期日期
+      scopes:
+        type: array
+        items:
+          type: string
+          example: FOO
+      metadata:
+        type: object
+        additionalProperties:
+          type: string
+          example:
+            aurh: AURH_READ
+  PasswordRequest:
+    type: object
+    description: 修改密码
+    properties:
+      old:
+        type: string
+      new:
+        type: string
+  RefreshToken:
+    type: string
+     
+  ShopDetails:
+    type: object
+    properties:
+      name:
+        type: string
+        description: 店铺名字
+      create_at:
+        type: integer
+        format: int64
+        description: 创建时间
+      modified_at:
+        type: integer
+        format: int64
+        description: 修改时间
+      logo:
+        type: string
+        format: uri
+        description: logo图片URL
+      introduce:
+        type: string
+        description: 店铺介绍
+      period_at:
+        type: integer
+        format: int64
+        description: 到期时间
+      owner:
+        $ref: '#/definitions/ShopOwner'
+      miniapp:
+        $ref: '#/definitions/MiniApp'
+      physical:
+        $ref: '#/definitions/PhysicalStore'
+  ShopOwner:
+    type: object
+    description: 店铺所有者
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+  PhysicalStore:
+    type: object
+    description: 实体店
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+        description: 实体店名字
+      contact:
+        type: string
+        description: 联系方式(电话号码)
+      email:
+        type: string
+        format: email
+        description: 邮箱
+      zipCode:
+        type: string
+        description: 邮编
+      address:
+        type: string
+        description: 地址
+      location:
+        type: object
+        description: 地理位置
+        $ref: '#/definitions/Location'
+
+  MiniApp:
+    type: object
+    description: 微信小程序
+    properties:
+      id:
+        type: string
+        description: bsonID
+      wechat_id:
+        type: string
+        description: 微信号
+
+  Location:
+    type: object
+    description: 经纬度
+    properties:
+      latitude:
+        type: number
+        format: double
+        description: 经度
+      longitude:
+        type: number
+        format: double
+        description: 经度
+
+security:
+  - shopKey: []
+  - bearerAuth: []
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: JWT token
+  shopKey:
+    type: apiKey
+    in: header
+    name: X-SHOP-ID
+

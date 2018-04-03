@@ -1,0 +1,216 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "店铺后台 APIs"
+  description: "店铺后台的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "api.merchants.shop.com"
+basePath: /v1
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: 分类
+   description: 分类(Taxons)，产品所属的类别
+paths:
+  /taxons:
+    get:
+      tags:
+        - "分类"
+      description: "所有可用的分类的数组及其所有子分类"
+      operationId: "taxonTree"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 所有可用的分类的数组
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Taxon'
+    post:
+      tags:
+        - "分类"
+      description: "创建根分类"
+      operationId: "createRootTaxons"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 创建分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+  /taxons/{code}:
+    parameters:
+      - name: code
+        in: path
+        description: 分类code
+        required: true
+        type: string
+    post:
+      tags:
+        - "分类"
+      description: "创建{code}分类下的子分离"
+      operationId: createTaxons
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 创建分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+    put:
+      tags:
+        - "分类"
+      description: "更新{code}分类"
+      operationId: updateTaxons
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 更新分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+    delete:
+      tags: 
+        - "分类"
+      description: 删除{code}分类
+      operationId: deleteTaxons  
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: 删除成功
+
+definitions:
+  GeneralError:
+    description: 错误通用类型
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 400
+      detail:
+        type: string
+        example: "none available"
+        description: 错误描述
+      status:
+        type: string
+        example: "Internal Server Error"
+        description: 错误原因
+  Image:
+    description: 图片
+    type: object
+    properties:
+      code:
+        type: string
+        example: thumbnail
+        description: 图片类型如缩略图/展示图...
+      path:
+        type: string
+        example: /uo/mug.jpg
+        description: 图片路径
+  Taxon:
+    description: 分类
+    type: object
+    properties:
+      code:
+        type: string
+        example: BREAD_CODE
+        description: 分类标识
+      name:
+        type: string
+        example: 面包
+        description: 分类名字
+      description:
+        type: string
+        example: 好吃的面包们都在这儿了
+        description: 分类的描述信息
+      images:
+        type: array
+        items: 
+          $ref: '#/definitions/Image'
+      children:
+        type: array
+        description: "子分类"
+        items:
+          $ref: '#/definitions/Taxon'
+  ProductTaxon:
+    type: object
+    description: "一个商品可以属于多种分类，只有一个主分类"
+    properties:
+      main:
+        type: string
+        example: MAIN_TAXON_CODE
+        description: "主分类"
+      others:
+        type: array
+        items:
+          type: string
+          example: OTHER_TAXON_CODE
+          description: "其它分类"
+  AddTaxonsRequest:
+    type: object
+    description: 添加分类的参数
+    properties:
+      name:
+        type: string
+        example: "面包"
+        description: 分类名字
+      description:
+        type: string
+        example: "好吃的面包们都在这儿了"
+        description: 分类描述
+      images:
+        type: array
+        items: 
+          $ref: '#/definitions/Image'
+
+      
+
+securityDefinitions:
+  internalApiKey:
+    type: apiKey
+    in: header
+    name: X-Mashape-Key   

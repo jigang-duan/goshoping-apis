@@ -1,0 +1,471 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "店铺后台 APIs"
+  description: "店铺后台的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "api.merchants.shop.com"
+basePath: /v1
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: Auth
+   description: 身份认证
+ - name: Shop
+   description: 店铺管理
+ - name: Taxons
+   description: 分类(Taxons)，产品所属的类别
+   
+paths:
+  /shop/me:
+    get:
+      tags:
+        - Shop
+      summary: 获取店铺详情
+      responses:
+        200:
+          description: 店铺详情
+          schema:
+            $ref: '#/definitions/ShopDetails'
+    put:
+      tags:
+        - Shop
+      summary: 修改店铺详情
+      parameters:
+        - in: body
+          name: details
+          required: true
+          schema:
+            $ref: '#/definitions/ShopDetails'
+      responses:
+        201:
+          description: 成功
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: 用户登录
+      description: 使用用户名和密码登录，获取Token
+      operationId: signIn
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: 用户注册
+      description: 使用用户名和密码登录
+      operationId: signUp
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AuthRequest'
+      responses:
+        201:
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/Token'
+  /auth/signout:
+    delete:
+      tags:
+        - Auth
+      summary: 用户登出
+      description: 撤销Token
+      responses:
+        204:
+          description: 登出成功
+  /auth/password:
+    put:
+      tags:
+        - Auth
+      summary: 修改密码
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/PasswordRequest'
+      responses:
+        201:
+          description: 成功
+  /auth/token:
+    put:
+      tags:
+        - Auth
+      summary: 刷新Token
+      parameters:
+        - in: body
+          name: refresh_token
+          required: true
+          schema:
+            $ref: '#/definitions/RefreshToken'
+      responses:
+        201:
+          description: 成功
+  /taxons:
+    get:
+      tags:
+        - Taxons
+      description: "所有可用的分类的数组及其所有子分类"
+      operationId: "taxonTree"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 所有可用的分类的数组
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Taxon'
+    post:
+      tags:
+        - Taxons
+      description: "创建根分类"
+      operationId: "createRootTaxons"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 创建分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+  /taxons/{code}:
+    parameters:
+      - name: code
+        in: path
+        description: 分类code
+        required: true
+        type: string
+    post:
+      tags:
+        - Taxons
+      description: "创建{code}分类下的子分离"
+      operationId: createTaxons
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 创建分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+    put:
+      tags:
+        - Taxons
+      description: "更新{code}分类"
+      operationId: updateTaxons
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/AddTaxonsRequest'
+      responses:
+        201:
+          description: 更新分类成功
+          schema:
+            type: string
+            example: "TAXONS_CODE"
+    delete:
+      tags: 
+        - Taxons
+      description: 删除{code}分类
+      operationId: deleteTaxons  
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: 删除成功
+
+definitions:
+  GeneralError:
+    description: 错误通用类型
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 400
+      detail:
+        type: string
+        example: "none available"
+        description: 错误描述
+      status:
+        type: string
+        example: "Internal Server Error"
+        description: 错误原因
+  Image:
+    description: 图片
+    type: object
+    properties:
+      code:
+        type: string
+        example: thumbnail
+        description: 图片类型如缩略图/展示图...
+      path:
+        type: string
+        example: /uo/mug.jpg
+        description: 图片路径
+  Taxon:
+    description: 分类
+    type: object
+    properties:
+      code:
+        type: string
+        example: BREAD_CODE
+        description: 分类标识
+      name:
+        type: string
+        example: 面包
+        description: 分类名字
+      description:
+        type: string
+        example: 好吃的面包们都在这儿了
+        description: 分类的描述信息
+      images:
+        type: array
+        items: 
+          $ref: '#/definitions/Image'
+      children:
+        type: array
+        description: "子分类"
+        items:
+          $ref: '#/definitions/Taxon'
+  ProductTaxon:
+    type: object
+    description: "一个商品可以属于多种分类，只有一个主分类"
+    properties:
+      main:
+        type: string
+        example: MAIN_TAXON_CODE
+        description: "主分类"
+      others:
+        type: array
+        items:
+          type: string
+          example: OTHER_TAXON_CODE
+          description: "其它分类"
+  AddTaxonsRequest:
+    type: object
+    description: 添加分类的参数
+    properties:
+      name:
+        type: string
+        example: "面包"
+        description: 分类名字
+      description:
+        type: string
+        example: "好吃的面包们都在这儿了"
+        description: 分类描述
+      images:
+        type: array
+        items: 
+          $ref: '#/definitions/Image'
+  AuthRequest:
+    type: object
+    description: '登录或注册'
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  Token:
+    type: object
+    description: 'JWT Token'
+    properties:
+      access_token:
+        type: string
+        example: 访问Token
+      refresh_token:
+        type: string
+        example: 刷新Token
+      expires_at:
+        type: integer
+        example: 过期日期
+      scopes:
+        type: array
+        items:
+          type: string
+          example: FOO
+      metadata:
+        type: object
+        additionalProperties:
+          type: string
+          example:
+            aurh: AURH_READ
+  PasswordRequest:
+    type: object
+    description: 修改密码
+    properties:
+      old:
+        type: string
+      new:
+        type: string
+  RefreshToken:
+    type: string
+
+  ShopDetails:
+    type: object
+    properties:
+      name:
+        type: string
+        description: 店铺名字
+      create_at:
+        type: integer
+        format: int64
+        description: 创建时间
+      modified_at:
+        type: integer
+        format: int64
+        description: 修改时间
+      logo:
+        type: string
+        format: uri
+        description: logo图片URL
+      introduce:
+        type: string
+        description: 店铺介绍
+      period_at:
+        type: integer
+        format: int64
+        description: 到期时间
+      owner:
+        $ref: '#/definitions/ShopOwner'
+      miniapp:
+        $ref: '#/definitions/MiniApp'
+      physical:
+        $ref: '#/definitions/PhysicalStore'
+  ShopOwner:
+    type: object
+    description: 店铺所有者
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+  PhysicalStore:
+    type: object
+    description: 实体店
+    properties:
+      id:
+        type: string
+        description: bsonID
+      name:
+        type: string
+        description: 实体店名字
+      contact:
+        type: string
+        description: 联系方式(电话号码)
+      email:
+        type: string
+        format: email
+        description: 邮箱
+      zipCode:
+        type: string
+        description: 邮编
+      address:
+        type: string
+        description: 地址
+      location:
+        type: object
+        description: 地理位置
+        $ref: '#/definitions/Location'
+
+  MiniApp:
+    type: object
+    description: 微信小程序
+    properties:
+      id:
+        type: string
+        description: bsonID
+      wechat_id:
+        type: string
+        description: 微信号
+
+  Location:
+    type: object
+    description: 经纬度
+    properties:
+      latitude:
+        type: number
+        format: double
+        description: 经度
+      longitude:
+        type: number
+        format: double
+        description: 经度
+      
+
+security:
+  - shopKey: []
+  - bearerAuth: []
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: JWT token
+  shopKey:
+    type: apiKey
+    in: header
+    name: X-SHOP-ID

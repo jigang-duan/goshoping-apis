@@ -1,0 +1,2104 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "基于[Sylius](docs.sylius.org)的店面Rest APIs文档",
+    "version": "1.0.0",
+    "title": "Sylius店面 APIs",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "djg4055108@126.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "externalDocs": {
+    "description": "了解更多关于Sylius的信息",
+    "url": "http://docs.sylius.org"
+  },
+  "host": "localhost:8000",
+  "basePath": "/v1/rest-shop",
+  "tags": [
+    {
+      "name": "APIs",
+      "description": ""
+    },
+    {
+      "name": "购物车",
+      "description": "所有与购物车管理相关的操作",
+      "externalDocs": {
+        "description": "参考",
+        "url": "http://docs.sylius.org/en/latest/book/orders/index.html"
+      }
+    },
+    {
+      "name": "产品",
+      "description": "显示产品目录和添加产品评论",
+      "externalDocs": {
+        "description": "参考",
+        "url": "http://docs.sylius.org/en/latest/book/products/index.html"
+      }
+    },
+    {
+      "name": "分类单元",
+      "description": "显示分类树",
+      "externalDocs": {
+        "description": "参考",
+        "url": "http://docs.sylius.org/en/latest/book/products/taxons.html"
+      }
+    },
+    {
+      "name": "结账",
+      "description": "所有与结帐完成相关的操作。重要的是，按照给定的顺序执行它们(地址、选择发货、选择付款和完成)",
+      "externalDocs": {
+        "description": "参考",
+        "url": "http://docs.sylius.org/en/latest/book/orders/checkout.html"
+      }
+    },
+    {
+      "name": "用户",
+      "description": "所有与用户功能相关的操作",
+      "externalDocs": {
+        "description": "参考",
+        "url": "http://docs.sylius.org/en/latest/book/customers/customer_and_shopuser.html"
+      }
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "",
+        "description": "",
+        "tags": [
+          "APIs"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/carts/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "购物车标识符",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "拾取你的购物车",
+        "description": "此端点 为您所提供的token分配一个新的购物车。我们建议使用UUID作为一个标记，以避免重复。如果之前的任何一个购物车或订单都具有相同的令牌值，那么将抛出一个异常。",
+        "operationId": "cartPickUp",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "description": "包含关于该渠道的信息，该渠道应该与新创建的购物车相关联",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PickupCartRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "购物车已被拾取并分配给指定的标记"
+          },
+          "400": {
+            "description": "无效的输入",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "显示购物车",
+        "description": "这个端点显示当前结算的购物车状态",
+        "operationId": "cartSummarize",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "购物车的当前状态，结算价格和相关项目",
+            "schema": {
+              "$ref": "#/definitions/Cart"
+            }
+          },
+          "400": {
+            "description": "无效输入(例如，未找到令牌)",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "扔掉你的购物车.",
+        "description": "这个端点将删除购物车和所有相关的购物车条目.",
+        "operationId": "cartDrop",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "购物车被删除了."
+          },
+          "400": {
+            "description": "无效输入(例如，未找到令牌)",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{token}/items": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "购物车标识.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "在购物车中添加商品.",
+        "description": "这个端点将允许您在购物车中添加一个新条目.",
+        "operationId": "cartPutItem",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "description": "一个项目的描述。最小的数据量是一个简单产品的产品code和数量。可配置的产品需要额外的可变code或选项字段，但两者都不能.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PutItemToCartRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "物品已被添加到购物车中",
+            "schema": {
+              "$ref": "#/definitions/Cart"
+            }
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{token}/multiple-items": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "购物车标识.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "将多个项目添加到购物车中.",
+        "description": "这个端点将允许您在购物车中添加一个新条目.",
+        "operationId": "cartPutItems",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "description": "物品的描述。同样的规则适用于每个数组的值，就像之前的点一样.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PutItemsToCartRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "物品已被添加到购物车中",
+            "schema": {
+              "$ref": "#/definitions/Cart"
+            }
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{token}/items/{identifier}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "购物车标识",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "identifier",
+          "in": "path",
+          "description": "特定项目的标识符。可以在购物车摘要中找到.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "改变购物车项目的数量.",
+        "operationId": "cartPutItemQuantity",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangeItemQuantityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "数量改变了."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "删除购物车条目",
+        "description": "这个端点将从您的购物车中删除一个条目",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "购物车项目已被移除."
+          },
+          "400": {
+            "description": "无效输入(例如，未找到令牌)",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{token}/coupon": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "购物车标识.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "将促销优惠券code添加到购物车中.",
+        "description": "此端点将允许您在购物车中添加促销优惠券code并获得折扣.",
+        "operationId": "cartAddCoupon",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddCouponRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "优惠券已被分配到购物车中."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "从购物车中删除促销优惠券code.",
+        "description": "这个端点将允许您从购物车中删除促销优惠券code",
+        "operationId": "cartRemoveCoupon",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "优惠券已经从购物车中移走了."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}": {
+      "get": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "显示结账总结",
+        "description": "这个端点将在结帐过程中显示汇总的购物车。这个动作相当于购物车的总结动作.",
+        "operationId": "checkoutSummarize",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "购物车的当前状态，计算价格和相关项目.",
+            "schema": {
+              "$ref": "#/definitions/Cart"
+            }
+          },
+          "400": {
+            "description": "无效输入(例如，未找到令牌)",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/address": {
+      "put": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "修改购物车货运地址.",
+        "description": "这个端点将允许您在购物车中添加帐单和送货地址，并开始结帐过程。您可以定义相同的送货地址和账单地址，或者单独指定它们.",
+        "operationId": "checkoutAddress",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CheckoutAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cart has been addressed."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/shipping/": {
+      "get": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "获得可用的运输方法.",
+        "description": "这个端点将向您展示所有购物车的可用的运输方法.",
+        "operationId": "checkoutShowAvailableShippingMethods",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取支持的货运方式",
+            "schema": {
+              "$ref": "#/definitions/AvailableShippingMethods"
+            }
+          },
+          "400": {
+            "description": "Invalid input, validation failed.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/shipping/{id}": {
+      "put": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "选择购物车运输方法.",
+        "description": "这个端点将允许您选择一个购物车配送方法.",
+        "operationId": "checkoutChooseShippingMethod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "应指定装运方法的订单数量.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CheckoutChooseShippingMethodRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "已经选择了运输方法."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/payment/": {
+      "get": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "获得可用的支付方式.",
+        "description": "这个端点将显示所有购物车支付的可用支付方法.",
+        "operationId": "checkoutShowAvailablePaymentMethods",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "支付方式",
+            "schema": {
+              "$ref": "#/definitions/AvailablePaymentMethods"
+            }
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/payment/{id}": {
+      "put": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "选择购物车支付方式.",
+        "description": "这个端点将允许您选择购物车一种支付方法.",
+        "operationId": "checkoutChoosePaymentMethod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "应指定支付方式的订购数量.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CheckoutChoosePaymentMethodRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "已经选择了支付方式."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/checkout/{token}/complete": {
+      "put": {
+        "tags": [
+          "结账"
+        ],
+        "summary": "完成付款.",
+        "description": "这个端点将允许您完成签出.",
+        "operationId": "checkoutComplete",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "购物车标识.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CheckoutCompleteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "付款已经完成."
+          },
+          "400": {
+            "description": "无效输入,验证失败.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "/taxon-products-by-slug/{slug}": {
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "显示分类下产品.",
+        "description": "这个端点将返回给定分类的一个分页的产品列表.",
+        "operationId": "productCatalogSlug",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "应该列出产品的分类的分类.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "应该收集哪些产品的渠道.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "应该显示产品的本地.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每一页预期产品的数量.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "分页的产品列表.",
+            "schema": {
+              "$ref": "#/definitions/ProductsPage"
+            }
+          }
+        }
+      }
+    },
+    "/taxon-products/{code}": {
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "显示分类下产品.",
+        "description": "这个端点将返回给定分类的一个分页的产品列表.",
+        "operationId": "productCatalog",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "应该列出产品的分类code.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "应该收集产品的渠道code.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "应该显示产品的locale .",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每一页预期产品的数量.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "分页的产品列表.",
+            "schema": {
+              "$ref": "#/definitions/ProductsPage"
+            }
+          }
+        }
+      }
+    },
+    "/products-by-slug/{slug}": {
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "用给定的slug显示一个产品.",
+        "description": "这个端点将返回带有给定slug的产品.",
+        "operationId": "productDetailsSlug",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "预期产品的Slug.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "应该收集哪些产品的渠道.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "应该显示产品的Locale.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProductDetails"
+            }
+          }
+        }
+      }
+    },
+    "/products/{code}": {
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "用给定的code显示产品.",
+        "description": "这个端点将返回带有给定code的产品.",
+        "operationId": "productDetails",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "预期产品的code.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "应该收集哪些产品的渠道.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "应该显示产品的Locale.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProductDetails"
+            }
+          }
+        }
+      }
+    },
+    "/product-reviews-by-slug/{slug}": {
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "description": "Slug of expected product.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "添加对产品的评论.",
+        "description": "这个端点将允许您为产品添加一个新的评论。请记住，在评论列表中可用之前，管理员应该接受它.",
+        "operationId": "productAddReviewSlug",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddReviewRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "已经添加到产品中了."
+          },
+          "400": {
+            "description": "Invalid input, validation failed.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "显示评论.",
+        "description": "这个端点将返回一个分页的所有与由slug识别的产品相关的所有评论的列表.",
+        "operationId": "productReviewsSlug",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "应该收集哪些产品的渠道.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProductReviewsPage"
+            }
+          }
+        }
+      }
+    },
+    "/product/{code}/reviews": {
+      "parameters": [
+        {
+          "name": "code",
+          "in": "path",
+          "description": "Code of expected product.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "添加对产品的评论.",
+        "description": "这个端点将允许您为产品添加一个新的评论。请记住，在评论列表中可用之前，管理员应该接受它.",
+        "operationId": "productAddReview",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "content",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddReviewRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "已经添加到产品中了."
+          },
+          "400": {
+            "description": "Invalid input, validation failed.",
+            "schema": {
+              "$ref": "#/definitions/GeneralError"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "产品"
+        ],
+        "summary": "显示评论.",
+        "description": "这个端点将返回一个分页的所有与由slug识别的产品相关的所有评论的列表.",
+        "operationId": "productReviews",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Channel from which products should be gathered.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProductReviewsPage"
+            }
+          }
+        }
+      }
+    },
+    "/taxons": {
+      "get": {
+        "tags": [
+          "分类单元"
+        ],
+        "summary": "显示分类树.",
+        "description": "这个端点将返回所有可用的所有子元素的数组及其所有子元素.",
+        "operationId": "taxonTree",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Locale in which taxons should be shown.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "所有可用的分类单元的数组.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Taxon"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxons/{code}": {
+      "get": {
+        "tags": [
+          "分类单元"
+        ],
+        "summary": "用给定的code显示分类单元.",
+        "description": "这个端点将返回一个带有给定code、子节点和根节点的分类单元，该节点直接路径到这个分类单元.",
+        "operationId": "taxonDetails",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Code of expected taxon.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Locale in which taxons should be shown.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested taxon with children.",
+            "schema": {
+              "$ref": "#/definitions/Taxon"
+            }
+          }
+        }
+      }
+    },
+    "/login_check": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "登陆",
+        "description": "用户登陆",
+        "operationId": "loginCheck",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "_username",
+            "in": "query",
+            "description": "用户名",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "_password",
+            "in": "query",
+            "description": "用户密码",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "JWT token"
+          }
+        }
+      }
+    },
+    "/request-password-reset": {
+      "put": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "请求通过号码重置用户密码.",
+        "description": "重置密码路径的号码将被发送给用户。密码重置的默认路径是`/password-reset/{token}`。要更改它，您需要覆盖模板`@SyliusShopApi\\Email\\passwordReset.html.twig`。",
+        "operationId": "requestPasswordReset",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "phoneNumber",
+            "in": "body",
+            "description": "需要重置密码的用户的号码.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestPasswordResetting"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "重置密码请求已被发送."
+          },
+          "500": {
+            "description": "未找到提供号码的用户."
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "提供当前登录的用户详细信息.",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LoggedInCustomerDetails"
+            }
+          },
+          "500": {
+            "description": "目前还没有登录用户."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PickupCartRequest": {
+      "type": "object",
+      "description": "渠道code的请求体",
+      "required": [
+        "channel"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string",
+          "example": "WEB_US"
+        }
+      }
+    },
+    "AddReviewRequest": {
+      "type": "object",
+      "description": "带有渠道code的请求体.",
+      "required": [
+        "channelCode",
+        "title",
+        "rating",
+        "comment",
+        "phoneNumber"
+      ],
+      "properties": {
+        "channelCode": {
+          "type": "string",
+          "example": "WEB_US"
+        },
+        "title": {
+          "type": "string",
+          "example": "很棒的产品"
+        },
+        "rating": {
+          "type": "integer",
+          "example": 5
+        },
+        "comment": {
+          "type": "string",
+          "example": "如果我是一个杯子，我想要像这个一样!"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "作者的电话号码.",
+          "example": "+85 xxxxxx"
+        }
+      }
+    },
+    "PutItemToCartRequest": {
+      "type": "object",
+      "description": "用于将物品放入购物车的请求体.",
+      "required": [
+        "productCode"
+      ],
+      "properties": {
+        "productCode": {
+          "type": "string",
+          "example": "LOGAN_HAT_CODE"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "example": 3,
+          "default": 1
+        },
+        "variantCode": {
+          "type": "string",
+          "example": "SMALL_LOGAN_T_SHIRT_CODE"
+        },
+        "options": {
+          "type": "object",
+          "description": "Keys引用一个选项的code和值到选项值的code.",
+          "additionalProperties": {
+            "type": "string",
+            "example": "HAT_SIZE_S"
+          }
+        }
+      }
+    },
+    "PutItemsToCartRequest": {
+      "type": "array",
+      "description": "用于将物品放入购物车的请求体.",
+      "items": {
+        "$ref": "#/definitions/PutItemToCartRequest"
+      }
+    },
+    "ChangeItemQuantityRequest": {
+      "type": "object",
+      "description": "用于更改项目数量的请求体.",
+      "required": [
+        "quantity"
+      ],
+      "properties": {
+        "quantity": {
+          "type": "integer",
+          "example": 2
+        }
+      }
+    },
+    "AddCouponRequest": {
+      "type": "object",
+      "description": "用于将促销优惠券code添加到购物车中的请求体.",
+      "required": [
+        "coupon"
+      ],
+      "properties": {
+        "coupon": {
+          "type": "string",
+          "example": "BANANAS"
+        }
+      }
+    },
+    "CheckoutAddressRequest": {
+      "type": "object",
+      "description": "用于购物车寻址的请求体.",
+      "required": [
+        "shippingAddress"
+      ],
+      "properties": {
+        "shippingAddress": {
+          "$ref": "#/definitions/Address"
+        },
+        "billingAddress": {
+          "$ref": "#/definitions/Address"
+        }
+      }
+    },
+    "CheckoutChooseShippingMethodRequest": {
+      "type": "object",
+      "description": "用于选择运输方法的请求体.",
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "运输方法的Code.",
+          "example": "DHL"
+        }
+      }
+    },
+    "CheckoutChoosePaymentMethodRequest": {
+      "type": "object",
+      "description": "用于选择支付方式的请求体.",
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "支付方式的Code.",
+          "example": "PBC"
+        }
+      }
+    },
+    "CheckoutCompleteRequest": {
+      "type": "object",
+      "description": "Body of request used to complete checkout.",
+      "required": [
+        "phoneNumber"
+      ],
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "description": "客户的号码.",
+          "example": "+86 xxx xxxx"
+        },
+        "notes": {
+          "type": "string",
+          "description": "额外的备注.",
+          "example": "我只能在下午3点到8点之间有空."
+        }
+      }
+    },
+    "AvailableShippingMethods": {
+      "type": "object",
+      "description": "每批货物的可用装运方法.",
+      "properties": {
+        "shipments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "methods": {
+                "$ref": "#/definitions/ShippingMethod"
+              }
+            }
+          }
+        }
+      }
+    },
+    "AvailablePaymentMethods": {
+      "type": "object",
+      "description": "每种支付方式的可用支付方法.",
+      "properties": {
+        "payments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "methods": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/definitions/PaymentMethod"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Cart": {
+      "type": "object",
+      "description": "包含项目的信息，当前状态，总数和更多信息.",
+      "properties": {
+        "tokenValue": {
+          "type": "string",
+          "example": "SDAOSLEFNWU35H3QLI5325"
+        },
+        "channel": {
+          "type": "string",
+          "example": "WEB_US",
+          "externalDocs": {
+            "description": "在Sylius文档中参考关于渠道的信息.",
+            "url": "http://docs.sylius.org/en/latest/book/configuration/channels.html"
+          }
+        },
+        "currency": {
+          "description": "根据ISO 4217，购物车货币code。这个值是从渠道继承的",
+          "type": "string",
+          "example": "CNY"
+        },
+        "locale": {
+          "description": "购物车语言环境的code。这个值是从渠道继承的",
+          "type": "string",
+          "example": "zh_CN"
+        },
+        "checkoutState": {
+          "description": "结帐的当前状态.",
+          "type": "string",
+          "default": "cart",
+          "externalDocs": {
+            "description": "在Sylius文档中了解更多关于签出状态的信息.",
+            "url": "http://docs.sylius.org/en/latest/book/orders/checkout.html#checkout-state-machine"
+          },
+          "enum": [
+            "cart",
+            "addressed",
+            "shipping_selected",
+            "payment_selected",
+            "completed"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CartItem"
+          }
+        },
+        "totals": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "description": "购物车的总成本。下面所有属性的总和.",
+              "type": "integer",
+              "example": 0
+            },
+            "items": {
+              "description": "购物车项目的总成本.",
+              "type": "integer",
+              "example": 0
+            },
+            "taxes": {
+              "description": "购物车税总额.",
+              "type": "integer",
+              "example": 0
+            },
+            "shipping": {
+              "description": "运输总成本.",
+              "type": "integer",
+              "example": 0
+            },
+            "promotion": {
+              "description": "促销金额.",
+              "type": "integer",
+              "example": 0
+            }
+          }
+        },
+        "shippingAddress": {
+          "$ref": "#/definitions/Address"
+        },
+        "billingAddress": {
+          "$ref": "#/definitions/Address"
+        },
+        "payments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "description": "Current state of a payment.",
+                "type": "string",
+                "default": "cart",
+                "externalDocs": {
+                  "description": "在Sylius文档中了解更多关于支付状态的信息.",
+                  "url": "http://docs.sylius.org/en/latest/book/orders/payments.html#payment-state-machine"
+                },
+                "enum": [
+                  "cart",
+                  "new",
+                  "processing",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "refunded"
+                ]
+              }
+            }
+          }
+        },
+        "method": {
+          "$ref": "#/definitions/PaymentMethod"
+        },
+        "shipments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "description": "Current state of a shipment.",
+                "type": "string",
+                "default": "cart",
+                "externalDocs": {
+                  "description": "在Sylius文档中了解更多关于装运状态的信息.",
+                  "url": "http://docs.sylius.org/en/latest/book/orders/shipments.html#the-shipment-state-machine"
+                },
+                "enum": [
+                  "cart",
+                  "ready",
+                  "cancelled",
+                  "shipped"
+                ]
+              },
+              "method": {
+                "$ref": "#/definitions/ShippingMethod"
+              }
+            }
+          }
+        },
+        "cartDiscounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "additionalProperties": {
+                "$ref": "#/definitions/Discount"
+              }
+            }
+          }
+        }
+      }
+    },
+    "CartItem": {
+      "type": "object",
+      "description": "结算价格、数量和相关产品的购物车项目.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "quantity": {
+          "type": "integer",
+          "example": 2
+        },
+        "total": {
+          "type": "integer",
+          "example": 1000
+        },
+        "product": {
+          "$ref": "#/definitions/Product"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "description": "产品的基本信息、变体、属性、关联和图像.",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "LOGAN_MUG_CODE"
+        },
+        "name": {
+          "type": "string",
+          "example": "Logan Mug"
+        },
+        "slug": {
+          "type": "string",
+          "example": "logan-mug"
+        },
+        "averageRating": {
+          "type": "integer",
+          "example": 4.5
+        },
+        "taxons": {
+          "$ref": "#/definitions/ProductTaxon"
+        },
+        "variants": {
+          "description": "引用变体的code.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Variant"
+            }
+          }
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
+        },
+        "associations": {
+          "description": "引用关联的code.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          }
+        }
+      }
+    },
+    "Image": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "thumbnail"
+        },
+        "path": {
+          "type": "string",
+          "example": "/uo/mug.jpg"
+        }
+      }
+    },
+    "Variant": {
+      "type": "object",
+      "description": "如果产品是简单的，它将只有一个具有相同code和名称的变体。否则，该产品可以有不同字段的变体列表",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "LOGAN_MUG_CODE"
+        },
+        "name": {
+          "type": "string",
+          "example": "洛根的杯子"
+        },
+        "axis": {
+          "type": "array",
+          "description": "相关产品选项的code列表",
+          "items": {
+            "type": "string",
+            "example": "HAT_SIZE_S"
+          }
+        },
+        "nameAxis": {
+          "description": "从以前的字段到给定变量的转换值的映射",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "price": {
+          "$ref": "#/definitions/Price"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          }
+        }
+      }
+    },
+    "Attribute": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "MUG_MATERIAL_CODE"
+        },
+        "name": {
+          "type": "string",
+          "example": "杯子的材料"
+        },
+        "value": {
+          "type": "string",
+          "example": "木材"
+        }
+      }
+    },
+    "Taxon": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "CATEGORIES_CODE"
+        },
+        "name": {
+          "type": "string",
+          "example": "分类"
+        },
+        "slug": {
+          "type": "string",
+          "example": "categories"
+        },
+        "description": {
+          "type": "string",
+          "example": "所有产品的一般类别."
+        },
+        "children": {
+          "type": "array",
+          "description": "在这树型基础上，你可以在前端建立一个面包屑。否则(例如，显示所有分类单元的树结构)子分类将包含所有它自己的分类单元.",
+          "items": {
+            "$ref": "#/definitions/Taxon"
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          }
+        }
+      }
+    },
+    "TaxonDetails": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "$ref": "#/definitions/Taxon"
+        },
+        "parentTree": {
+          "$ref": "#/definitions/Taxon"
+        }
+      }
+    },
+    "ProductTaxon": {
+      "type": "object",
+      "properties": {
+        "main": {
+          "type": "string",
+          "example": "MAIN_TAXON_CODE"
+        },
+        "others": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "OTHER_TAXON_CODE"
+          }
+        }
+      }
+    },
+    "Discount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "促销名称.",
+          "type": "string",
+          "example": "夏日促销"
+        },
+        "amount": {
+          "$ref": "#/definitions/Price"
+        }
+      }
+    },
+    "Page": {
+      "type": "object",
+      "description": "通用页对象.",
+      "properties": {
+        "page": {
+          "description": "当前页码.",
+          "type": "integer",
+          "example": 1
+        },
+        "limit": {
+          "description": "每一页的项目数量.",
+          "type": "integer",
+          "example": 10
+        },
+        "pages": {
+          "description": "给定限制的可用页面数量.",
+          "type": "integer",
+          "example": 3
+        },
+        "total": {
+          "description": "所有分页资源的数量.",
+          "type": "integer",
+          "example": 25
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "description": "链接到当前页面.",
+              "type": "integer",
+              "example": "/rest-shop/some-path?page=1&limit=10"
+            },
+            "first": {
+              "description": "链接到第一个页面.",
+              "type": "string",
+              "example": "/rest-shop/some-path?page=1&limit=10"
+            },
+            "last": {
+              "description": "链接到最后一页.",
+              "type": "string",
+              "example": "/rest-shop/some-path?page=1&limit=10"
+            },
+            "next": {
+              "description": "链接到下一页.",
+              "type": "string",
+              "example": "/rest-shop/some-path?page=1&limit=10"
+            }
+          }
+        }
+      }
+    },
+    "ProductsPage": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Page"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ProductDetails": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Product"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "breadcrumb": {
+              "type": "string",
+              "example": "categories/mugs/logan-mug"
+            }
+          }
+        }
+      ]
+    },
+    "ProductReviewsPage": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Page"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "example": "漂亮的杯子"
+            },
+            "rating": {
+              "type": "integer",
+              "example": 5
+            },
+            "comment": {
+              "type": "string",
+              "example": "这是一个很好的杯子."
+            },
+            "author": {
+              "type": "string",
+              "example": "+86 xxx xxxx"
+            }
+          }
+        }
+      ]
+    },
+    "Price": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "description": "给定信道的结算价格。价格是作为整数存储的，所以默认情况下，它应该除以100.",
+          "type": "integer",
+          "example": 1000
+        },
+        "currency": {
+          "type": "string",
+          "example": "CNY"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "段"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "纪刚"
+        },
+        "countryCode": {
+          "type": "string",
+          "example": "CN"
+        },
+        "street": {
+          "type": "string",
+          "example": "贝克街221B"
+        },
+        "city": {
+          "type": "string",
+          "example": "长沙"
+        },
+        "postcode": {
+          "type": "string",
+          "example": "410000"
+        },
+        "provinceName": {
+          "type": "string",
+          "example": "湖南省"
+        }
+      }
+    },
+    "PaymentMethod": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "PBC"
+        },
+        "name": {
+          "type": "string",
+          "example": "Pay by check"
+        },
+        "description": {
+          "type": "string",
+          "example": "一些特殊的描述"
+        }
+      }
+    },
+    "ShippingMethod": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "DHL"
+        },
+        "name": {
+          "type": "string",
+          "example": "DHL 交付"
+        },
+        "description": {
+          "type": "string",
+          "example": "DHL快递将会在第二天送达你的包裹!"
+        },
+        "price": {
+          "$ref": "#/definitions/Price"
+        }
+      }
+    },
+    "RequestPasswordResetting": {
+      "type": "object",
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "example": "+86 xxxxxxxx"
+        }
+      }
+    },
+    "LoggedInCustomerDetails": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "段"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "纪刚"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "example": "+86 xxxxxxxx"
+        }
+      }
+    },
+    "GeneralError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "example": 400
+        },
+        "message": {
+          "type": "string",
+          "example": "验证失败"
+        },
+        "errors": {
+          "description": "Keys引用发字段生错误",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "sylius.shop_api.additionalProp.not_null"
+            }
+          }
+        }
+      }
+    }
+  }
+}
