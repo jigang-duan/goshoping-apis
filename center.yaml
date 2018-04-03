@@ -112,13 +112,22 @@ paths:
       tags:
         - Shop
       summary: 获取店铺列表
+      parameters:
+        - name: limit
+          in: query
+          description: 预期数量
+          required: false
+          type: integer
+        - name: start
+          in: query
+          description: 起始位置
+          required: false
+          type: integer
       responses:
         200:
           description: 所有可用的分类的数组
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/ShopDetailsResponse'
+            $ref: '#/definitions/ShopDetailsPage'
     post:
       tags:
         - Shop
@@ -352,7 +361,34 @@ definitions:
         type: number
         format: double
         description: 经度
-     
+
+  Page:
+    type: object
+    description: 通用页对象.
+    properties:
+      start:
+        description: 起始位置
+        type: integer
+        example: 1
+      limit:
+        description: 预期产品的数量
+        type: integer
+        example: 10
+      total:
+        description: 所有分页资源的数量.
+        type: integer
+        example: 25
+  
+  ShopDetailsPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/ShopDetailsResponse'
+
 
 security:
   - bearerAuth: []
