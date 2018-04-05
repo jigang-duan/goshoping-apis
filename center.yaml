@@ -159,7 +159,7 @@ paths:
         200:
           description: 店铺详情
           schema:
-            $ref: '#/definitions/ShopDetails'
+            $ref: '#/definitions/ShopDetailsResponse'
     put:
       tags:
         - Shop
@@ -178,7 +178,54 @@ paths:
         - Shop
       summary: 删除店铺
       responses:
+        204:
+          description: 成功
+  /shops/{shopID}/submit:
+    put:
+      tags:
+        - Shop
+      summary: 提交，等待审核
+      description: 填完资源后提交，进入"审核中"状态
+      parameters:
+      - name: shopID
+        in: path
+        description: ShopID.
+        required: true
+        type: string
+      responses:
         201:
+          description: 成功
+  /shops/{shopID}/audit:
+    put:
+      tags:
+        - Shop
+      summary: 审核通过
+      description: 审核通过生成X-SHOP-KEY
+      parameters:
+      - name: shopID
+        in: path
+        description: ShopID.
+        required: true
+        type: string
+      responses:
+        201:
+          description: 成功
+          schema:
+            $ref: '#/definitions/ShopKeys'
+  /shops/{shopID}/cancel:
+    put:
+      tags:
+        - Shop
+      summary: 取消
+      description: 取消，进入初始状态，删除X-SHOP-KEY
+      parameters:
+      - name: shopID
+        in: path
+        description: ShopID.
+        required: true
+        type: string
+      responses:
+        204:
           description: 成功
 
 definitions:
@@ -251,10 +298,6 @@ definitions:
         type: string
         format: uuid
         description: X-SHOP-ID
-      create_at:
-        type: integer
-        format: int64
-        description: 创建时间
 
   ShopDetailsResponse:
     type: object
@@ -263,6 +306,33 @@ definitions:
         type: string
         format: uuid
         description: X-SHOP-ID
+      create_at:
+        type: integer
+        format: int64
+        description: 创建时间
+      modified_at:
+        type: integer
+        format: int64
+        description: 修改时间
+      period_at:
+        type: integer
+        format: int64
+        description: 到期时间
+      submit_at:
+        type: integer
+        format: int64
+        description: 提交时间
+      state:
+        type: string
+        enum:
+        - untreated
+        - reviewing
+        - completed
+        description: >
+          状态:
+          * `untreated` - 未提交
+          * `reviewing` - 审核中
+          * `completed` - 已完成
       details:
         $ref: '#/definitions/ShopDetails'
 
@@ -272,14 +342,6 @@ definitions:
       name:
         type: string
         description: 店铺名字
-      create_at:
-        type: integer
-        format: int64
-        description: 创建时间
-      modified_at:
-        type: integer
-        format: int64
-        description: 修改时间
       logo:
         type: string
         format: uri
@@ -287,10 +349,6 @@ definitions:
       introduce:
         type: string
         description: 店铺介绍
-      period_at:
-        type: integer
-        format: int64
-        description: 到期时间
       owner:
         $ref: '#/definitions/ShopOwner'
       miniapp:
@@ -388,6 +446,19 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/ShopDetailsResponse'
+
+  ShopKeys:
+    type: object
+    description: X-SHOP-KEYs.
+    properties:
+      back:
+        description: 生成的店铺X-SHOP-KEY
+        type: string
+        example: "a8428177b08998e498fbeebe97ea2cf28538b3c57212b257436312160248bee4426dd47763ad3a6af6"
+      mini:
+        description: 生成的小程序X-SHOP-KEY
+        type: string
+        example: "a74a8c75b08998e498fbeebe97ea2cf258fe8bffe9a617ecb686da66cbf287afe783b120bd17789c71"
 
 
 security:
