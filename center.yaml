@@ -184,8 +184,8 @@ paths:
     put:
       tags:
         - Shop
-      summary: 提交，等待审核
-      description: 填完资源后提交，进入"审核中"状态
+      summary: 提交，等待审核
+      description: 填完资源后提交，进入"审核中"状态
       parameters:
       - name: shopID
         in: path
@@ -199,7 +199,7 @@ paths:
     put:
       tags:
         - Shop
-      summary: 审核通过
+      summary: 审核通过
       description: 审核通过生成X-SHOP-KEY
       parameters:
       - name: shopID
@@ -216,8 +216,8 @@ paths:
     put:
       tags:
         - Shop
-      summary: 取消
-      description: 取消，进入初始状态，删除X-SHOP-KEY
+      summary: 取消
+      description: 取消，进入初始状态，删除X-SHOP-KEY
       parameters:
       - name: shopID
         in: path
@@ -323,16 +323,16 @@ definitions:
         format: int64
         description: 提交时间
       state:
-        type: string
+        type: integer
         enum:
         - untreated
         - reviewing
         - completed
         description: >
-          状态:
-          * `untreated` - 未提交
-          * `reviewing` - 审核中
-          * `completed` - 已完成
+          状态:
+          * 0 - `untreated` - 未提交
+          * 1 - `reviewing` - 审核中
+          * 2 - `completed` - 已完成
       details:
         $ref: '#/definitions/ShopDetails'
 
@@ -452,11 +452,11 @@ definitions:
     description: X-SHOP-KEYs.
     properties:
       back:
-        description: 生成的店铺X-SHOP-KEY
+        description: 生成的店铺X-SHOP-KEY
         type: string
         example: "a8428177b08998e498fbeebe97ea2cf28538b3c57212b257436312160248bee4426dd47763ad3a6af6"
       mini:
-        description: 生成的小程序X-SHOP-KEY
+        description: 生成的小程序X-SHOP-KEY
         type: string
         example: "a74a8c75b08998e498fbeebe97ea2cf258fe8bffe9a617ecb686da66cbf287afe783b120bd17789c71"
 
