@@ -646,5 +646,5 @@ securityDefinitions:
   shopKey:
     type: apiKey
     in: header
-    name: X-SHOP-ID
+    name: X-SHOP-KEY
 
