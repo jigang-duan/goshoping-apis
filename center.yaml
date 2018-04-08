@@ -11,8 +11,8 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "api.center.shop.com"
-basePath: /v1
+host: "http://btdxcx.com:3001"
+basePath: 
 schemes:
  - "http"
 consumes:

@@ -3,7 +3,7 @@ info:
   version: "1.0.0"
   title: "店铺小程序 APIs"
   description: "店铺小程序的APIs"
-  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  termsOfService: "https://jigang-duan.github.io/goshoping-apis"
   contact:
     name: "段纪刚"
     email: "djg4055108@126.com"
@@ -11,8 +11,8 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "api.small.shop.com"
-basePath: /v1
+host: "http://btdxcx.com:3003"
+basePath: 
 schemes:
  - "http"
 consumes:

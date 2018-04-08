@@ -11,8 +11,8 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "api.merchants.shop.com"
-basePath: /v1
+host: "http://btdxcx.com:3002"
+basePath: 
 schemes:
  - "http"
 consumes:
@@ -26,8 +26,178 @@ tags:
    description: 店铺管理
  - name: Taxons
    description: 分类(Taxons)，产品所属的类别
+ - name: Product
+   description: 产品
    
 paths:
+  /product/attributes:
+    post:
+      tags:
+        - Product
+      summary: 创建产品属性
+      parameters:
+        - in: body
+          name: attributes
+          required: true
+          schema:
+            $ref: '#/definitions/ProductAttributes'
+      responses:
+        201:
+          description:
+          schema:
+            $ref: '#/definitions/AttributesResponse'
+    get:
+      tags:
+        - Product
+      summary: 获得产品属性集合
+      parameters:
+      - name: offset
+        in: path
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: path
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description:
+          schema:
+            $ref: '#/definitions/AttributesPage'
+  /product/attributes/{code}:
+    get:
+      tags:
+        - Product
+      summary: 获得单个产品属性
+      parameters:
+      - name: code
+        in: path
+        description: 产品属性标识符
+        required: true
+        type: string
+      responses:
+        200:
+          description:
+          schema:
+            $ref: '#/definitions/AttributesResponse'
+    put:
+      tags:
+        - Product
+      summary: 更新产品属性
+      parameters:
+        - name: code
+          in: path
+          description: 产品属性标识符
+          required: true
+          type: string
+        - in: body
+          name: attributes
+          required: true
+          schema:
+            $ref: '#/definitions/ProductAttributes'
+      responses:
+        204:
+          description: 更新成功
+    delete:
+      tags:
+        - Product
+      summary: 删除产品属性
+      parameters:
+        - name: code
+          in: path
+          description: 产品属性标识符
+          required: true
+          type: string
+      responses:
+        204:
+          description: 删除成功
+
+  /product/options:
+    post:
+      tags:
+        - Product
+      summary: 创建产品选项
+      parameters:
+        - in: body
+          name: options
+          required: true
+          schema:
+            $ref: '#/definitions/ProductOptions'
+      responses:
+        201:
+          description:
+          schema:
+            $ref: '#/definitions/ProductOptions'
+    get:
+      tags:
+        - Product
+      summary: 获得产品选项集合
+      parameters:
+      - name: offset
+        in: path
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: path
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description:
+          schema:
+            $ref: '#/definitions/OptionsPage'
+  /product/options/{code}:
+    get:
+      tags:
+        - Product
+      summary: 获得单个产品选项
+      parameters:
+        - name: code
+          in: path
+          description: 产品选项标识符
+          required: true
+          type: string
+      responses:
+        200:
+          description:
+          schema:
+            $ref: '#/definitions/ProductOptions'
+    put:
+      tags:
+        - Product
+      summary: 更新产品选项
+      parameters:
+        - name: code
+          in: path
+          description: 产品选项标识符
+          required: true
+          type: string
+        - in: body
+          name: options
+          required: true
+          schema:
+            $ref: '#/definitions/ProductOptions'
+      responses:
+        204:
+          description: 更新成功
+    delete:
+      tags:
+        - Product
+      summary: 删除产品选项
+      parameters:
+        - name: code
+          in: path
+          description: 产品选项标识符
+          required: true
+          type: string
+      responses:
+        204:
+          description: 删除成功
+
   /shop/me:
     get:
       tags:
@@ -429,7 +599,6 @@ definitions:
         type: object
         description: 地理位置
         $ref: '#/definitions/Location'
-
   MiniApp:
     type: object
     description: 微信小程序
@@ -440,7 +609,6 @@ definitions:
       wechat_id:
         type: string
         description: 微信号
-
   Location:
     type: object
     description: 经纬度
@@ -453,7 +621,111 @@ definitions:
         type: number
         format: double
         description: 经度
-      
+
+  Page:
+    type: object
+    description: 通用页对象.
+    properties:
+      offset:
+        description: 起始位置
+        type: integer
+        example: 1
+      limit:
+        description: 预期产品的数量
+        type: integer
+        example: 10
+      total:
+        description: 所有分页资源的数量.
+        type: integer
+        example: 25
+
+  ProductAttributes:
+    type: object
+    description: 产品属性
+    properties:
+      code: 
+        type: string
+        description: 产品属性标识符
+        example: mug_material
+      type:
+        type: string
+        description: 产品属性类型
+        enum:
+        - text
+        - checkbox
+        - select
+        - integer
+        - percent
+        - textarea
+        - date
+        - datetime
+        description: >
+          状态:
+          * `text` - 
+          * `checkbox` - 
+          * `select` -
+          * `integer` - 
+          * `percent` - 
+          * `textarea` - 文本区域,产品的更详细的信息
+          * `date` - 日期
+          * `datetime` - 时间
+      configuration:
+        type: array
+  AttributesResponse:
+    allOf:
+      - type: object
+        properties:
+          id:
+            type: string
+          updated_at:
+            type: integer
+            format: int64
+            description: 更新时间
+          created_at:
+            type: integer
+            format: int64
+            description: 创建时间
+      - $ref: '#/definitions/ProductAttributes'
+  AttributesPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/AttributesResponse'
+
+  ProductOptions:
+    type: object
+    description: 产品选项
+    properties:
+      code: 
+        type: string
+        description: 产品选项标识符
+        example: MUG_SIZE
+      values:
+        type: array
+        items: 
+          $ref: '#/definitions/ProductOptionsValue'
+  ProductOptionsValue:
+    type: object
+    properties:
+      code: 
+        type: string
+        example: MUG_SIZE_S
+      description:
+        type: string
+        example: S码
+  OptionsPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/ProductOptions'
 
 security:
   - shopKey: []
