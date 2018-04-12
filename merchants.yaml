@@ -43,7 +43,7 @@ paths:
             $ref: '#/definitions/ProductAttributes'
       responses:
         201:
-          description:
+          description: Created
           schema:
             $ref: '#/definitions/AttributesResponse'
     get:
@@ -52,12 +52,12 @@ paths:
       summary: 获得产品属性集合
       parameters:
       - name: offset
-        in: path
+        in: query
         description: 起始位置
         required: false
         type: integer
       - name: limit
-        in: path
+        in: query
         description: 预期产品属性的数量
         required: false
         type: integer
@@ -127,7 +127,7 @@ paths:
             $ref: '#/definitions/ProductOptions'
       responses:
         201:
-          description:
+          description: created
           schema:
             $ref: '#/definitions/ProductOptions'
     get:
@@ -136,18 +136,18 @@ paths:
       summary: 获得产品选项集合
       parameters:
       - name: offset
-        in: path
+        in: query
         description: 起始位置
         required: false
         type: integer
       - name: limit
-        in: path
+        in: query
         description: 预期产品选项的数量
         required: false
         type: integer
       responses:
         200:
-          description:
+          description: page
           schema:
             $ref: '#/definitions/OptionsPage'
   /product/options/{code}:
@@ -163,7 +163,7 @@ paths:
           type: string
       responses:
         200:
-          description:
+          description: option
           schema:
             $ref: '#/definitions/ProductOptions'
     put:
@@ -231,18 +231,18 @@ paths:
         - application/json
       parameters:
       - name: offset
-        in: path
+        in: query
         description: 起始位置
         required: false
         type: integer
       - name: limit
-        in: path
+        in: query
         description: 预期产品的数量
         required: false
         type: integer
       responses:
         200:
-          description:
+          description: page
           schema:
             $ref: '#/definitions/ProductPage'
   /products/{spu}:
@@ -939,7 +939,7 @@ definitions:
     type: object
     description: 产品属性
     properties:
-      code:  
+      code: 
         type: string
         description: 产品属性标识符
         example: mug_material
@@ -966,6 +966,9 @@ definitions:
           * `datetime` - 时间
       configuration:
         type: array
+      value:
+        type: string
+        description: 产品属性值(在产品获取中出现，属性对象中不用)
   AttributesResponse:
     allOf:
       - type: object
@@ -999,14 +1002,17 @@ definitions:
         type: string
         description: 产品选项标识符
         example: MUG_SIZE
-      values:
+      options:
         type: array
         items: 
           $ref: '#/definitions/ProductOptionsValue'
+      value:
+        type: string
+        description: 产品选项值(在产品获取中出现，选项对象中不用)
   ProductOptionsValue:
     type: object
     properties:
-      code: 
+      value: 
         type: string
         example: MUG_SIZE_S
       description:
@@ -1099,6 +1105,8 @@ definitions:
       attributes:
         type: array
         description: 产品的属性
+        items:
+          $ref: '#/definitions/ProductAttributes'
       associations:
         type: array
         description: 这个产品的相关产品
@@ -1107,15 +1115,21 @@ definitions:
       options:
         type: array
         description: 产品的选项
+        items:
+          $ref: '#/definitions/ProductOptions'
       variants:
         type: array
         description: 产品的变体
       images:
         type: array
         description: 产品的图片
+        items:
+          $ref: '#/definitions/Image'
       reviews:
         type: array
         description: 产品的评论
+        items:
+          $ref: '#/definitions/ProductReview'
   ProductPage:
     allOf:
       - $ref: '#/definitions/Page'
@@ -1153,7 +1167,36 @@ definitions:
         items:
           type: string
           example: SMM
-            
+  ProductReview:
+    type: object
+    description: 产品评论
+    properties:
+      title:
+        type: string
+        description: 产品评论标题
+      comment:
+        type: string
+        description: 产品评论发表评论
+      rating:
+        type: integer
+        minimum: 1
+        maximum: 5
+        default: 5
+        description: 产品评论等级 (1..5)
+      author:
+        type: object
+        schema:
+          $ref: '#/definitions/ReviewAuthor'
+  ReviewAuthor:
+    type: object
+    description: 评论作者
+    properties:
+      username:
+        type: string
+        description: 用户名
+      nickname:
+        type: string
+        description: 昵称
 
 
 security:
