@@ -11,7 +11,7 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "http://btdxcx.com:3002"
+host: "btdxcx.com:3002"
 basePath: 
 schemes:
  - "http"
@@ -53,17 +53,17 @@ paths:
       parameters:
       - name: offset
         in: path
-        description: 起始位置
+        description: 起始位置
         required: false
         type: integer
       - name: limit
         in: path
-        description: 预期产品的数量
+        description: 预期产品属性的数量
         required: false
         type: integer
       responses:
         200:
-          description:
+          description: 响应
           schema:
             $ref: '#/definitions/AttributesPage'
   /product/attributes/{code}:
@@ -79,7 +79,7 @@ paths:
         type: string
       responses:
         200:
-          description:
+          description: 产品属性响应
           schema:
             $ref: '#/definitions/AttributesResponse'
     put:
@@ -103,7 +103,7 @@ paths:
     delete:
       tags:
         - Product
-      summary: 删除产品属性
+      summary: 删除产品属性
       parameters:
         - name: code
           in: path
@@ -118,7 +118,7 @@ paths:
     post:
       tags:
         - Product
-      summary: 创建产品选项
+      summary: 创建产品选项
       parameters:
         - in: body
           name: options
@@ -133,16 +133,16 @@ paths:
     get:
       tags:
         - Product
-      summary: 获得产品选项集合
+      summary: 获得产品选项集合
       parameters:
       - name: offset
         in: path
-        description: 起始位置
+        description: 起始位置
         required: false
         type: integer
       - name: limit
         in: path
-        description: 预期产品的数量
+        description: 预期产品选项的数量
         required: false
         type: integer
       responses:
@@ -154,7 +154,7 @@ paths:
     get:
       tags:
         - Product
-      summary: 获得单个产品选项
+      summary: 获得单个产品选项
       parameters:
         - name: code
           in: path
@@ -169,7 +169,7 @@ paths:
     put:
       tags:
         - Product
-      summary: 更新产品选项
+      summary: 更新产品选项
       parameters:
         - name: code
           in: path
@@ -187,7 +187,7 @@ paths:
     delete:
       tags:
         - Product
-      summary: 删除产品选项
+      summary: 删除产品选项
       parameters:
         - name: code
           in: path
@@ -197,6 +197,300 @@ paths:
       responses:
         204:
           description: 删除成功
+  /products:
+    post:
+      tags:
+        - Product
+      summary: 创建产品
+      description: 创建产品
+      operationId: createProduct
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: options
+          required: true
+          schema:
+            $ref: '#/definitions/CreateProductRequest'
+      responses:
+        201:
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/Product'
+    get:
+      tags:
+        - Product
+      summary: 获取产品集合
+      description: 获取产品集合
+      operationId: fetchProducts
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: offset
+        in: path
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: path
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description:
+          schema:
+            $ref: '#/definitions/ProductPage'
+  /products/{spu}:
+    get:
+      tags:
+        - Product
+      summary: 获取单个产品
+      description: 通过SPU获取单个产品
+      operationId: fetchProduct
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+         - name: spu
+           in: path
+           description: 产品SPU
+           required: true
+           type: string
+      responses:
+        200:
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/Product'
+    put:
+      tags:
+        - Product
+      summary: 更新产品
+      description: 更新产品
+      operationId: updateProduct
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: spu
+          in: path
+          description: 产品SPU
+          required: true
+          type: string
+        - in: body
+          name: request
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateProductRequest'
+      responses:
+        204:
+          description: 更新成功
+  /products/{spu}/taxons:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    put:
+      tags:
+        - Product
+      summary: 更新产品分类
+      description: 更新产品分类
+      operationId: updateProductTaxons
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: taxons
+          required: true
+          schema:
+            $ref: '#/definitions/ProductTaxon'
+      responses:
+        204:
+          description: 更新成功
+  /products/{spu}/attributes:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    post:
+      tags:
+        - Product
+      summary: 给产品添加属性
+      description: 给产品添加属性
+      operationId: createProductAttributes
+      parameters:
+        - in: body
+          name: attributes
+          required: true
+          schema:
+            $ref: '#/definitions/ProductAttributesRequest'
+      responses:
+        201:
+          description: 成功
+  /products/{spu}/attributes/{code}:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: code
+        in: path
+        description: 产品属性code
+        required: true
+        type: string
+    put:
+      tags:
+        - Product
+      summary: 更新产品添加属性
+      description: 给产品添加属性
+      operationId: updateProductAttributes
+      parameters:
+      - in: body
+        name: value
+        required: true
+        schema:
+          type: string
+      responses:
+        201:
+          description: 成功  
+    delete:
+      tags:
+        - Product
+      summary: 删除产品添加属性
+      description: 给产品添加属性
+      operationId: deleteProductAttributes
+      responses:
+        204:
+          description: 成功  
+  /products/{spu}/associations:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    post:
+      tags:
+        - Product
+      summary: 给产品添加关联产品
+      description: 给产品添加关联产品
+      operationId: createProductAssociations
+      parameters:
+        - in: body
+          name: attributes
+          required: true
+          schema:
+            $ref: '#/definitions/AssociationProduct'
+      responses:
+        201:
+          description: 成功
+  /products/{spu}/associations/{code}:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: code
+        in: path
+        description: 产品关联code
+        required: true
+        type: string
+    put:
+      tags:
+        - Product
+      summary: 更新产品关联产品
+      description: 给产品添加关联产品
+      operationId: updateProductAssociation
+      parameters:
+        - in: body
+          name: value
+          required: true
+          schema:
+            $ref: '#/definitions/AssociationProduct'
+      responses:
+        201:
+          description: 成功  
+    delete:
+      tags:
+        - Product
+      summary: 删除产品添加关联产品
+      description: 给产品添加关联产品
+      operationId: deleteProductAssociation
+      responses:
+        204:
+          description: 成功
+  /products/{spu}/images:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    post:
+      tags:
+        - Product
+      summary: 给产品添加图片
+      description: 给产品添加关联图片
+      operationId: createProductImages
+      parameters:
+        - in: body
+          name: attributes
+          required: true
+          schema:
+            $ref: '#/definitions/Image'
+      responses:
+        201:
+          description: 成功
+  /products/{spu}/images/{code}:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: code
+        in: path
+        description: 产品images code
+        required: true
+        type: string
+    put:
+      tags:
+        - Product
+      summary: 更新产品图片
+      description: 更新产品图片
+      operationId: updateProductImage
+      parameters:
+        - in: body
+          name: value
+          required: true
+          schema:
+            $ref: '#/definitions/Image'
+      responses:
+        201:
+          description: 成功  
+    delete:
+      tags:
+        - Product
+      summary: 删除产品图片
+      description: 删除产品图片
+      operationId: deleteProductImage
+      responses:
+        204:
+          description: 成功
 
   /shop/me:
     get:
@@ -426,10 +720,12 @@ definitions:
         type: string
         example: thumbnail
         description: 图片类型如缩略图/展示图...
-      path:
-        type: string
-        example: /uo/mug.jpg
-        description: 图片路径
+      paths:
+        type: array
+        items:
+          type: string
+          example: /uo/mug.jpg
+          description: 图片路径
   Taxon:
     description: 分类
     type: object
@@ -643,13 +939,12 @@ definitions:
     type: object
     description: 产品属性
     properties:
-      code: 
+      code:  
         type: string
         description: 产品属性标识符
         example: mug_material
       type:
         type: string
-        description: 产品属性类型
         enum:
         - text
         - checkbox
@@ -660,7 +955,7 @@ definitions:
         - date
         - datetime
         description: >
-          状态:
+          产品属性类型:
           * `text` - 
           * `checkbox` - 
           * `select` -
@@ -680,7 +975,7 @@ definitions:
           updated_at:
             type: integer
             format: int64
-            description: 更新时间
+            description: 更新时间
           created_at:
             type: integer
             format: int64
@@ -716,7 +1011,7 @@ definitions:
         example: MUG_SIZE_S
       description:
         type: string
-        example: S码
+        example: S码
   OptionsPage:
     allOf:
       - $ref: '#/definitions/Page'
@@ -726,6 +1021,140 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/ProductOptions'
+
+  CreateProductRequest:
+    type: object
+    properties:
+      spu: 
+        type: string
+        example: LOGAN_MUG_SPU
+      name:
+        type: string
+        example: 洛根的杯子
+        description: 产品名字
+      description:
+        type: string
+        example: 洛根的杯子
+      mainTaxon:
+        type: string
+        description: 主分类
+      productTaxons:
+        type: array
+        description: 产品所属的分类
+        items: 
+          type: string
+          example: OTHER_TAXON_CODE
+          description: 其它分类
+      attributes:
+        type: array
+        description: 产品的属性
+      options:
+        type: array
+        description: 产品的选项
+        items:
+          type: string
+          example: mug_type
+          description: 选项的标识符
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+        
+  Product:
+    type: object
+    properties:
+      spu: 
+        type: string
+        example: LOGAN_MUG_SPU
+        description: 产品SPU(标准化产品单元)
+      name:
+        type: string
+        example: 洛根的杯子
+        description: 产品名字
+      description:
+        type: string
+        example: 洛根的杯子
+      updated_at:
+        type: integer
+        format: int64
+        description: 更新时间
+      created_at:
+        type: integer
+        format: int64
+        description: 创建时间
+      mainTaxon:
+        type: string
+        description: 主分类
+      productTaxons:
+        type: array
+        description: 产品所属的分类
+        items: 
+          type: string
+          example: OTHER_TAXON_CODE
+          description: 其它分类
+      averageRating:
+        type: integer
+        description: 平均评分
+        example: 4.5
+      attributes:
+        type: array
+        description: 产品的属性
+      associations:
+        type: array
+        description: 这个产品的相关产品
+        items:
+          $ref: '#/definitions/AssociationProduct'
+      options:
+        type: array
+        description: 产品的选项
+      variants:
+        type: array
+        description: 产品的变体
+      images:
+        type: array
+        description: 产品的图片
+      reviews:
+        type: array
+        description: 产品的评论
+  ProductPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+  UpdateProductRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+  ProductAttributesRequest:
+    type: object
+    properties:
+      code:
+        type: string
+        example: mug_color
+        description: 产品属性code
+      value:
+        type: string
+        example: yellow
+  AssociationProduct:
+    type: object
+    properties:
+      code:
+        type: string
+        example: similar_products
+      spus:
+        type: array
+        items:
+          type: string
+          example: SMM
+            
+
 
 security:
   - shopKey: []
