@@ -139,7 +139,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Taxon'
-  /taxon-products/{taxonCode}:
+  /taxons/{taxonCode}/products:
     get:
       tags:
         - Products
@@ -195,7 +195,7 @@ paths:
           description: spu产品信息
           schema:
             $ref: '#/definitions/Product'
-  /product/{spu}/reviews:
+  /products/{spu}/reviews:
     parameters:
       - name: spu
         in: path
