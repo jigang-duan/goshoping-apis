@@ -12,7 +12,7 @@ info:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
 host: "btdxcx.com:3002"
-basePath: 
+# basePath: '/api'
 schemes:
  - "http"
 consumes:
@@ -264,7 +264,7 @@ paths:
            type: string
       responses:
         200:
-          description: 创建成功
+          description: 成功
           schema:
             $ref: '#/definitions/Product'
     put:
@@ -491,7 +491,227 @@ paths:
       responses:
         204:
           description: 成功
-
+  /products/{spu}/reviews:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    post:
+      tags:
+        - Product
+      summary: 给产品添加评论
+      description: 给产品添加评论
+      operationId: createProductReviews
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/ReviewsRequest'
+      responses:
+        201:
+          description: 成功
+    get:
+      tags:
+        - Product
+      summary: 给产品添加评论
+      description: 给产品添加评论
+      operationId: fetchProductReviews
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: offset
+        in: query
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description: page
+          schema:
+            $ref: '#/definitions/ReviewsPage'
+  /products/{spu}/reviews/{id}:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: 评论id
+        required: true
+        type: string
+    put:
+      tags:
+        - Product
+      summary: 更新产品评论
+      description: 给产品添加评论
+      operationId: fetchProductReview
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/ReviewsRequest'
+      responses:
+        201:
+          description: 成功
+    delete:
+      tags:
+        - Product
+      summary: 删除产品评论
+      description: 删除产品评论
+      operationId: deleteProductReviews
+      responses:
+        204:
+          description: 成功
+  /products/{spu}/reviews/{id}/accept:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: 评论id
+        required: true
+        type: string
+    patch:
+      tags:
+        - Product
+      summary: 接受产品评论
+      description: 接受一个产品评论
+      operationId: accept
+      responses:
+        204:
+          description: 成功
+  /products/{spu}/reviews/{id}/reject:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: 评论id
+        required: true
+        type: string
+    patch:
+      tags:
+        - Product
+      summary: 拒绝产品评论
+      description: 拒绝一个产品评论
+      operationId: reject
+      responses:
+        204:
+          description: 成功
+  /products/{spu}/variants:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+    post:
+      tags:
+        - Product
+      summary: 创建产品变体
+      description: 创建产品变体
+      operationId: createProductVariants
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/ProductVariants'
+      responses:
+        201:
+          description: 成功
+    get:
+      tags:
+        - Product
+      summary: 获取产品变体
+      description: 获取产品变体
+      operationId: fetchProductVariants
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProductVariants'
+  /products/{spu}/variants/{sku}:
+    parameters:
+      - name: spu
+        in: path
+        description: 产品SPU
+        required: true
+        type: string
+      - name: sku
+        in: path
+        description: 产品SKU
+        required: true
+        type: string
+    get:
+      tags:
+        - Product
+      summary: 获取产品变体
+      description: 获取产品变体
+      operationId: fetchProductVariant
+      responses:
+        200:
+          description: 成功
+          schema:
+            $ref: '#/definitions/ProductVariants'
+    put:
+      tags:
+        - Product
+      summary: 更新产品变体
+      description: 获取产品变体
+      operationId: updateProductVariant
+      parameters:
+        - in: body
+          name: content
+          required: true
+          schema:
+            $ref: '#/definitions/ProductVariants'
+      responses:
+        201:
+          description: 成功
+    delete:
+      tags:
+        - Product
+      summary: 删除产品变体
+      description: 删除产品变体
+      operationId: deleteProductVariant
+      responses:
+        204:
+          description: 成功
+        
   /shop/me:
     get:
       tags:
@@ -966,9 +1186,11 @@ definitions:
           * `datetime` - 时间
       configuration:
         type: array
+        items:
+            type: string
       value:
         type: string
-        description: 产品属性值(在产品获取中出现，属性对象中不用)
+        description: 产品属性值(在产品获取中出现，属性对象中不用)
   AttributesResponse:
     allOf:
       - type: object
@@ -1008,7 +1230,7 @@ definitions:
           $ref: '#/definitions/ProductOptionsValue'
       value:
         type: string
-        description: 产品选项值(在产品获取中出现，选项对象中不用)
+        description: 产品选项值(在产品获取中出现，选项对象中不用)
   ProductOptionsValue:
     type: object
     properties:
@@ -1054,6 +1276,8 @@ definitions:
       attributes:
         type: array
         description: 产品的属性
+        items:
+          $ref: '#/definitions/ProductAttributes'
       options:
         type: array
         description: 产品的选项
@@ -1120,6 +1344,8 @@ definitions:
       variants:
         type: array
         description: 产品的变体
+        items:
+          $ref: '#/definitions/ProductVariants'
       images:
         type: array
         description: 产品的图片
@@ -1171,6 +1397,9 @@ definitions:
     type: object
     description: 产品评论
     properties:
+      id:
+        type: string
+        description: 产品评论Id
       title:
         type: string
         description: 产品评论标题
@@ -1184,19 +1413,105 @@ definitions:
         default: 5
         description: 产品评论等级 (1..5)
       author:
-        type: object
-        schema:
-          $ref: '#/definitions/ReviewAuthor'
+        $ref: '#/definitions/ReviewAuthor'
+      status:
+        type: string
+        enum:
+        - new
+        - accepted
+        - rejected
+        description: >
+          产品评论状态:
+          * `new` - 新的
+          * `accepted` - 接受
+          * `rejected` - 拒绝
+      updated_at:
+        type: integer
+        format: int64
+        description: 更新时间
+      created_at:
+        type: integer
+        format: int64
+        description: 创建时间
   ReviewAuthor:
     type: object
     description: 评论作者
     properties:
-      username:
+      username:
         type: string
         description: 用户名
       nickname:
         type: string
         description: 昵称
+  ReviewsRequest:
+    type: object
+    description: 产品评论
+    properties:
+      title:
+        type: string
+        description: 产品评论标题
+      comment:
+        type: string
+        description: 产品评论发表评论
+      rating:
+        type: integer
+        minimum: 1
+        maximum: 5
+        default: 5
+        description: 产品评论等级 (1..5)
+      author:
+        $ref: '#/definitions/ReviewAuthor'
+  ReviewsPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/ProductReview'
+  ProductVariants:
+    type: object
+    description: 简单产品的SPU和变体的SKU是一样的。若有不同的产品选项，该产品可以有不同的变体列表
+    properties:
+      sku:
+        type: string
+        example: LOGAN_MUG_SKU
+        description: 产品SKU(库存量单位)
+      name:
+        type: string
+        example: 洛根的杯子
+      pricings:
+        description: 价格
+        $ref: '#/definitions/Pricing'
+      tracked:
+        type: boolean
+        description: 是否跟踪库存
+      shippingCategory:
+        type: string
+        description: 物流种类
+      optionValues:
+        type: array
+        description: 产品可用的选项集合(例如:小、中、大杯)
+        items:
+          type: string
+          example: HAT_SIZE_S
+      stock:
+        type: integer
+        description: 库存量
+        example: 100
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+  Pricing:
+    type: object
+    properties:
+      current:
+        description: 价格。价格是作为整数存储的，所以默认情况下，它应该除以100.
+        type: integer
+        example: 1000
+
 
 
 security:
