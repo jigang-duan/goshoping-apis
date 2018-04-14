@@ -298,7 +298,7 @@ paths:
         description: 产品SPU
         required: true
         type: string
-    put:
+    patch:
       tags:
         - Product
       summary: 更新产品分类
