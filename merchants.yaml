@@ -267,7 +267,7 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/Product'
-    put:
+    patch:
       tags:
         - Product
       summary: 更新产品
