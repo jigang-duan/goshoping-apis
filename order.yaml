@@ -1,0 +1,771 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "店铺后台 APIs"
+  description: "店铺后台的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "btdxcx.com:3002"
+# basePath: '/api'
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: Cart
+   description: 购物车
+ - name: Checkout
+   description: 结账
+ - name: Order
+   description: 订单
+   
+paths:
+  /orders/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: 订单ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Order
+      summary: 查询单个订单
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Order'
+  /orders/{id}/cancel:
+    parameters:
+      - name: id
+        in: path
+        description: 订单ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Order
+      summary: 取消单个订单
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: No Content
+  /orders/{orderId}/shipment/ship:
+    parameters:
+      - name: orderId
+        in: path
+        description: 订单ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Order
+      summary: 订单发货
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: No Content
+  /orders/{orderId}/shipment/complete:
+    parameters:
+      - name: orderId
+        in: path
+        description: 订单ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Order
+      summary: 订单收货
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: No Content
+
+  /carts:
+    post:
+      tags:
+        - Cart
+      summary: 创建购物车
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCartRequest'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/Order'
+    get:
+      tags:
+        - Cart
+      summary: 购物车集合
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: offset
+        in: query
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: '#/definitions/OrderPage'
+  /carts/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: 购物车ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Cart
+      summary: 查询单个购物车
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Order'
+    delete:
+      tags: 
+        - Cart
+      summary: 删除单个购物车
+      description: 删除单个购物车
+      responses:
+        204:
+          description: Deleted(No Content)
+  /carts/{cartId}/items:
+    parameters:
+      - name: cartId
+        in: path
+        description: 购物车ID
+        required: true
+        type: string
+    post:
+      tags:
+        - Cart
+      summary: 创建购物车单项
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCartItemRequest'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/CartItem'
+  /carts/{cartId}/items/{cartItemId}:
+    parameters:
+      - name: cartId
+        in: path
+        description: 购物车ID
+        required: true
+        type: string
+      - name: cartItemId
+        in: path
+        description: 购物车单项ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Cart
+      summary: 更新购物车单项
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCartItemRequest'
+      responses:
+        204:
+          description: No Content
+    delete:
+      tags: 
+        - Cart
+      summary: 删除购物车单项
+      description: 删除购物车单项
+      responses:
+        204:
+          description: Deleted(No Content)
+
+  /checkouts/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: 请求的购物车ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Checkout
+      summary: 结账信息
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Order'
+  /checkouts/{id}/addressing:
+    parameters:
+      - name: id
+        in: path
+        description: 请求的购物车ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Checkout
+      summary: 配送和账单地址分配给购物车
+      description: 结账步骤addressing-配送和账单地址分配给购物车
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          required: true
+          schema:
+            $ref: '#/definitions/AddressingRequest'
+      responses:
+        204:
+          description: No Content
+  /checkouts/{id}/select-shipping:
+    parameters:
+      - name: id
+        in: path
+        description: 请求的购物车ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Checkout
+      summary: 检查可用的运输方法
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SelectableShipments'
+    put:
+      tags:
+        - Checkout
+      summary: 选择运输方法
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: select-shipping
+          required: true
+          schema:
+            $ref: '#/definitions/SelectShippingRequest'
+      responses:
+        204:
+          description: No Content
+  /checkouts/{id}/select-payment:
+    parameters:
+      - name: id
+        in: path
+        description: 请求的购物车ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Checkout
+      summary: 检查可用的支付方法
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SelectablePayments'
+    put:
+      tags:
+        - Checkout
+      summary: 选择支付方法
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: select-payment
+          required: true
+          schema:
+            $ref: '#/definitions/SelectPaymentRequest'
+      responses:
+        204:
+          description: No Content
+  /checkouts/{id}/complete:
+    parameters:
+      - name: id
+        in: path
+        description: 请求的购物车ID
+        required: true
+        type: string
+    put:
+      tags:
+        - Checkout
+      summary: 选择支付方法
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: select-payment
+          required: true
+          schema:
+            $ref: '#/definitions/CompleteCheckoutRequest'
+      responses:
+        204:
+          description: No Content
+
+definitions:
+  Page:
+    type: object
+    description: 通用页对象.
+    properties:
+      offset:
+        description: 起始位置
+        type: integer
+        example: 1
+      limit:
+        description: 预期产品的数量
+        type: integer
+        example: 10
+      total:
+        description: 所有分页资源的数量.
+        type: integer
+        example: 25
+  CreateCartRequest:
+    description: 创建购物车请求
+    type: object
+    properties:
+      customer:
+        type: string
+        example: jigang.duan
+        description: 顾客用户名
+  OrderPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+  Order:
+    description: 订单响应
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: cart_xxxxxxxx
+        description: 购物车ID
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/CartItem'
+      itemsTotal:
+        type: integer
+        example: 400
+        description: 项目总数
+      adjustments:
+        type: array
+        items:
+          $ref: '#/definitions/Adjustment'
+      adjustmentsTotal:
+        type: integer
+        example: -20
+        description: 所有cart调整值的总和
+      total:
+        type: integer
+        example: 400
+        description: 项目总数和调整总数
+      shippingAddress:
+        $ref: '#/definitions/Address'
+      billingAddress:
+        $ref: '#/definitions/Address'
+      shipment:
+        $ref: '#/definitions/Shipment'
+      payment:
+        $ref: '#/definitions/Payment'
+      customer:
+        $ref: '#/definitions/Customer'
+      state:
+        type: string
+        enum:
+        - cart
+        - new
+        - cancelled
+        - fulfilled
+        description: >
+          结账状态:
+          * `cart` - 未确认的订单，准备添加/删除项目
+          * `new` - 确认订单
+          * `cancelled` - 被操作员或顾客取消
+          * `fulfilled` - 订单已完成
+        example: cart
+      checkoutState:
+        type: string
+        enum:
+        - cart
+        - addressed
+        - shipping_selected
+        - payment_selected
+        - completed
+        description: >
+          结账状态:
+          * `cart` - 新建购物车
+          * `addressed` - 填写地址
+          * `shipping_selected` - 选择了运输方法
+          * `payment_selected` - 选择了支付方式
+          * `completed` - 完成了结算
+        example: cart
+      checkoutCompletedAt:
+        type: integer
+        format: int64
+        description: 结算完成时间
+      notes:
+        type: string
+        example: 请在发货前给我打电话
+      
+  CartItem:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: 购物车ItemID
+      quantity:
+        type: integer
+        example: 1
+        description: 项目单位的数量
+      unitPrice:
+        type: integer
+        example: 100
+        description: 单价
+      total:
+        type: integer
+        example: 100
+        description: 调整总数和购物车项总和
+      adjustments:
+        type: array
+        items:
+          $ref: '#/definitions/Adjustment'
+      adjustmentsTotal:
+        type: integer
+        example: -20
+        description: 所有cart调整值的总和
+      variant:
+        type: string
+        example: sukxxxx
+        description: 产品变体SUK
+  Adjustment:
+    description: 调整项
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: 调整项ID
+      type:
+        type: string
+        example: order_promotion/tax
+        description: 调整项类型
+      label:
+        type: string
+        description: 标签
+      amount:
+        type: integer
+        example: -200/230
+        description: 调整金额
+  Customer:
+    description: 顾客
+    properties:
+      username:
+        type: string
+        example: jigang.duan
+        description: 用户名
+      firstName:
+        type: string
+        example: 段
+        description: 姓名的性
+      lastName:
+        type: string
+        example: 纪刚
+        description: 姓名的名
+      phone:
+        type: string
+        example: 135xxxxxxxx
+        description: 电话号码
+      email:
+        type: string
+        example: shop@example.com
+        description: 邮件
+      portrait:
+        type: string
+        format: url
+        example: xxx.com/portrait_xxxx.png
+        description: 头像URL
+      role:
+        type: string
+        enum:
+        - common
+        - member
+        - distributor_l1
+        - distributor_l2
+        - distributor_l3
+        description: >
+          角色类型:
+          * `common` - 普通
+          * `member` - 会员
+          * `distributor_l1` - 1级分销商
+          * `distributor_l2` - 2级分销商
+          * `distributor_l3` - 3级分销商
+        example: common
+  CreateCartItemRequest:
+    description: 创建购物车单项请求
+    properties:
+      variant:
+        type: string
+        example: MEDIUM_MUG_CUP
+        description: 产品变体SUK
+      quantity:
+        type: integer
+        example: 1
+        description: 项目单位的数量
+  UpdateCartItemRequest:
+    description: 更新购物车单项请求
+    properties:
+      quantity:
+        type: integer
+        example: 1
+        description: 项目单位的数量
+  AddressingRequest:
+    description: 添加地址请求
+    properties:
+      differentBillingAddress:
+        type: boolean
+        example: false
+        description: 如果是false，则不需要账单地址字段，发货地址和账单地址一样
+      shippingAddress:
+        $ref: '#/definitions/Address'
+      billingAddress:
+        $ref: '#/definitions/Address'
+  Address:
+    description: 地址
+    properties:
+      firstName:
+        type: string
+        example: duan
+        description: 姓氏
+      lastName:
+        type: string
+        example: jigang
+        description: 名字
+      city:
+        type: string
+        example: jigang
+        description: 城市的名字
+      postcode:
+        type: string
+        example: jigang
+        description: 邮政编码
+      street:
+        type: string
+        example: jigang
+        description: 街道
+      country:
+        type: string
+        example: jigang
+        description: 国家
+  SelectableShipments:
+    description: 可选的装运方法
+    properties:
+      methods:
+        type: array
+        items:
+          $ref: '#/definitions/ShipmentMethod'
+  ShipmentMethod:
+    description: 装运方法
+    properties:
+      code:
+        type: string
+        example: dhl_express
+      name:
+        type: string
+        example: "DHL Express"
+      description:
+        type: string
+        example: UPS
+      price:
+        type: integer
+        example: 3549
+        description: 运费
+  SelectShippingRequest:
+    description: 选择装运方法的请求
+    properties:
+      method:
+        type: string
+        example: dhl_express
+  SelectablePayments:
+    description: 可选的支付方式
+    properties:
+      methods:
+        type: array
+        items:
+          $ref: '#/definitions/PaymentMethod'
+  PaymentMethod:
+    description: 支付方式
+    properties:
+      code:
+        type: string
+        example: cash_on_delivery
+      name:
+        type: string
+        example: "Cash on delivery"
+      description:
+        type: string
+        example: UPS
+  SelectPaymentRequest:
+    description: 选择支付方式的请求
+    properties:
+      method:
+        type: string
+        example: cash_on_delivery
+  CompleteCheckoutRequest:
+    description: 完成结账的请求
+    properties:
+      notes:
+        type: string
+        example: 请在发货前给我打电话
+  Shipment:
+    description: 运输
+    properties:
+      state:
+        type: string
+        enum:
+        - cart
+        - ready
+        - cancelled
+        - shipped
+        description: >
+          支付状态:
+          * `cart` - 结算时选择运输方式后创建
+          * `ready` - 准备收货
+          * `cancelled` - 取消
+          * `shipped` - 收货
+        example: cart
+      method:
+        $ref: '#/definitions/ShipmentMethod'
+  Payment:
+    description: 支付
+    properties:
+      state:
+        type: string
+        enum:
+        - cart
+        - new
+        - processing
+        - completed
+        - failed
+        - cancelled
+        - refunded
+        description: >
+          支付状态:
+          * `cart` - 结算时选择支付方式后创建
+          * `new` - 确认订单
+          * `processing` - 产生支付后
+          * `completed` - 支付完成
+          * `failed` - 故障
+          * `cancelled` - 确认支付
+          * `refunded` - 退还
+        example: cart
+      amount:
+        type: integer
+        example: 3549
+        description: 金额
+      method:
+        $ref: '#/definitions/PaymentMethod'
+
+
+
+security:
+  - shopKey: []
+  - bearerAuth: []
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: JWT token
+  shopKey:
+    type: apiKey
+    in: header
+    name: X-SHOP-KEY
