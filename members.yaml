@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "顾客/操作员 APIs"
-  description: "店铺后台的APIs"
+  description: "店铺后台 顾客/操作员的APIs"
   termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
   contact:
     name: "段纪刚"
@@ -46,12 +46,103 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/Customer'
+    get:
+      tags:
+        - Customer
+      summary: 获取客户信息
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: offset
+        in: query
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CustomerPage'
+  /customers/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: 顾客ID
+        required: true
+        type: string
+    get:
+      tags:
+        - Customer
+      summary: 获取客户信息
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Customer'
+    put:
+      tags:
+        - Customer
+      summary: 获取客户信息
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: customer
+          required: true
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        204:
+          description: No Content
+
 
 definitions:
+  Page:
+    type: object
+    description: 通用页对象.
+    properties:
+      offset:
+        description: 起始位置
+        type: integer
+        example: 1
+      limit:
+        description: 预期产品的数量
+        type: integer
+        example: 10
+      total:
+        description: 所有分页资源的数量.
+        type: integer
+        example: 25
+  CustomerPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
   Customer:
     type: object
     description: 顾客
     properties:
+      id:
+        type: string
+        example: xxxxxxx
+        description: 顾客ID
       username:
         type: string
         example: jigang.duan
@@ -86,36 +177,36 @@ definitions:
           性别:
           * `males` - 男性
           * `females` - 女性
-      birthday:
+      birthday:
         type: integer
         format: int64
         description: 生日
-      groups:
+      groups:
         type: array
         items:
           type: string
           example: GROUP_CODE
-          description: 组CODE
+          description: 组CODE
       registered_at:
         type: integer
         format: int64
-        description: 注册时间
+        description: 注册时间
       access_at:
         type: integer
         format: int64
-        description: 访问时间
+        description: 最近访问时间
       integral:
         type: integer
         format: int64
-        description: 积分
+        description: 积分
       buy_number:
         type: integer
         format: int64
-        description: 购买次数
+        description: 购买次数
       totalPurchaseAmount:
         type: integer
         format: int64
-        description: 购买总金额
+        description: 购买总金额
       role:
         type: string
         enum:
@@ -132,6 +223,10 @@ definitions:
           * `distributor_l2` - 2级分销商
           * `distributor_l3` - 3级分销商
         example: common
+      superior:
+        type: string
+        description: 上级
+        example: jigang.duan
 
 
 security:
