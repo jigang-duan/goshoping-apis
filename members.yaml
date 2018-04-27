@@ -1,0 +1,150 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "顾客/操作员 APIs"
+  description: "店铺后台的APIs"
+  termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
+  contact:
+    name: "段纪刚"
+    email: "djg4055108@126.com"
+    url: "http://swagger.io"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "btdxcx.com:3002"
+# basePath: '/api'
+schemes:
+ - "http"
+consumes:
+ - "application/json"
+produces:
+ - "application/json"
+tags:
+ - name: Customer
+   description: 顾客
+ - name: AdminUser
+   description: 操作员
+   
+paths:
+  /customers:
+    post:
+      tags:
+        - Customer
+      summary: 创建一个客户
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: customer
+          required: true
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/Customer'
+
+definitions:
+  Customer:
+    type: object
+    description: 顾客
+    properties:
+      username:
+        type: string
+        example: jigang.duan
+        description: 用户名
+      firstName:
+        type: string
+        example: 段
+        description: 姓名的性
+      lastName:
+        type: string
+        example: 纪刚
+        description: 姓名的名
+      phone:
+        type: string
+        example: 135xxxxxxxx
+        description: 电话号码
+      email:
+        type: string
+        example: shop@example.com
+        description: 邮件
+      portrait:
+        type: string
+        format: url
+        example: xxx.com/portrait_xxxx.png
+        description: 头像URL
+      gender:
+        type: string
+        enum:
+        - males
+        - females
+        description: >
+          性别:
+          * `males` - 男性
+          * `females` - 女性
+      birthday:
+        type: integer
+        format: int64
+        description: 生日
+      groups:
+        type: array
+        items:
+          type: string
+          example: GROUP_CODE
+          description: 组CODE
+      registered_at:
+        type: integer
+        format: int64
+        description: 注册时间
+      access_at:
+        type: integer
+        format: int64
+        description: 访问时间
+      integral:
+        type: integer
+        format: int64
+        description: 积分
+      buy_number:
+        type: integer
+        format: int64
+        description: 购买次数
+      totalPurchaseAmount:
+        type: integer
+        format: int64
+        description: 购买总金额
+      role:
+        type: string
+        enum:
+        - common
+        - member
+        - distributor_l1
+        - distributor_l2
+        - distributor_l3
+        description: >
+          角色类型:
+          * `common` - 普通
+          * `member` - 会员
+          * `distributor_l1` - 1级分销商
+          * `distributor_l2` - 2级分销商
+          * `distributor_l3` - 3级分销商
+        example: common
+
+
+security:
+  - shopKey: []
+  - bearerAuth: []
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: JWT token
+  shopKey:
+    type: apiKey
+    in: header
+    name: X-SHOP-KEY

@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "店铺后台 APIs"
-  description: "店铺后台的APIs"
+  title: "订单 APIs"
+  description: "订单的APIs"
   termsOfService: "https://jigang-duan.github.io/small-shops-apis/"
   contact:
     name: "段纪刚"
