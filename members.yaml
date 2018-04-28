@@ -49,7 +49,7 @@ paths:
     get:
       tags:
         - Customer
-      summary: 获取客户信息
+      summary: 获取客户集合
       consumes:
         - application/json
       produces:
@@ -80,7 +80,7 @@ paths:
     get:
       tags:
         - Customer
-      summary: 获取客户信息
+      summary: 获取客户
       consumes:
         - application/json
       produces:
@@ -93,7 +93,7 @@ paths:
     put:
       tags:
         - Customer
-      summary: 获取客户信息
+      summary: 更新客户
       consumes:
         - application/json
       produces:
@@ -104,6 +104,17 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Customer'
+      responses:
+        204:
+          description: No Content
+    delete:
+      tags:
+        - Customer
+      summary: 删除客户
+      consumes:
+        - application/json
+      produces:
+        - application/json
       responses:
         204:
           description: No Content
