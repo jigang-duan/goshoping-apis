@@ -11,8 +11,8 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "http://btdxcx.com:3003"
-basePath: 
+host: "btdxcx.com:3003"
+basePath: /api
 schemes:
  - "http"
 consumes:
@@ -121,6 +121,26 @@ paths:
       responses:
         201:
           description: 成功
+  /auth/weixin/sns/jscode2session:
+    post:
+      tags:
+        - Auth
+      summary: 使用微信code登陆
+      externalDocs:
+        description: 微信code登陆
+        url: "https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject"
+      parameters:
+        - in: body
+          name: wx_code
+          required: true
+          schema:
+            $ref: '#/definitions/WXCode'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/Token'
+
   /taxons:
     get:
       tags:
@@ -139,7 +159,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Taxon'
-  /taxons/{taxonCode}/products:
+  /products/taxon-products/{taxonCode}:
     get:
       tags:
         - Products
@@ -320,25 +340,6 @@ definitions:
         description: 所有分页资源的数量.
         type: integer
         example: 25
-      _links:
-        type: object
-        properties:
-          self:
-            description: 链接到当前页
-            type: integer
-            example: /some-path?start=1&limit=10
-          first:
-            description: 链接到第一个页
-            type: string
-            example: /some-path?start=1&limit=10
-          last:
-            description: 链接到最后一页
-            type: string
-            example: /some-path?start=1&limit=10
-          next:
-            description: 链接到下一页
-            type: string
-            example: /some-path?start=1&limit=10
   Product:
     type: object
     description: 产品的基本信息、变体、属性、关联和图像.
@@ -619,6 +620,10 @@ definitions:
       wechat_id:
         type: string
         description: 微信号
+  
+  WXCode:
+    type: string
+    description: 微信登陆Code
 
   Location:
     type: object

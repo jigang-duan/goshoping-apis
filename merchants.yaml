@@ -1071,8 +1071,8 @@ definitions:
         description: 到期时间
       owner:
         $ref: '#/definitions/ShopOwner'
-      miniapp:
-        $ref: '#/definitions/MiniApp'
+      weixin:
+        $ref: '#/definitions/Weixin'
       physical:
         $ref: '#/definitions/PhysicalStore'
   ShopOwner:
@@ -1115,7 +1115,7 @@ definitions:
         type: object
         description: 地理位置
         $ref: '#/definitions/Location'
-  MiniApp:
+  Weixin:
     type: object
     description: 微信小程序
     properties:
@@ -1125,6 +1125,12 @@ definitions:
       wechat_id:
         type: string
         description: 微信号
+      appid:
+        type: string
+        description: 小程序唯一标识
+      secret:
+        type: string
+        description: 小程序的 app secret
   Location:
     type: object
     description: 经纬度
