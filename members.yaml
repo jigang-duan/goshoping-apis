@@ -23,7 +23,7 @@ tags:
  - name: Customer
    description: 顾客
  - name: AdminUser
-   description: 操作员
+   description: 后台管理员
    
 paths:
   /customers:
@@ -118,6 +118,125 @@ paths:
       responses:
         204:
           description: No Content
+  /users:
+    post:
+      tags:
+        - AdminUser
+      summary: 创建一个管理员用户
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: adminuser
+          required: true
+          schema:
+            $ref: '#/definitions/AdminUser'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/AdminUser'
+    get:
+      tags:
+        - AdminUser
+      summary: 获取管理员用户集合
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: offset
+        in: query
+        description: 起始位置
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: 预期产品的数量
+        required: false
+        type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AdminUserPage'
+  /users/{id}:
+    get:
+      tags:
+        - AdminUser
+      summary: 获得一个管理员用户
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AdminUser'
+    put:
+      tags:
+        - AdminUser
+      summary: 获得一个管理员用户
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: body
+          name: adminuser
+          required: true
+          schema:
+            $ref: '#/definitions/AdminUser'
+      responses:
+        204:
+          description: No Content
+    delete:
+      tags:
+        - AdminUser
+      summary: 删除一个管理员用户
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: No Content
+  /users/profile/{username}:
+    get:
+      tags:
+        - AdminUser
+      summary: 获得一个管理员用户
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AdminUser'
 
 
 definitions:
@@ -238,6 +357,66 @@ definitions:
         type: string
         description: 上级
         example: jigang.duan
+  AdminUserPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/AdminUser'
+  AdminUser:
+    type: object
+    description: 管理员用户
+    properties:
+      id:
+        type: string
+        example: xxxxxxx
+        description: 管理员用户ID
+      username:
+        type: string
+        example: jigang.duan
+        description: 用户名
+      firstName:
+        type: string
+        example: 段
+        description: 姓名的性
+      lastName:
+        type: string
+        example: 纪刚
+        description: 姓名的名
+      phone:
+        type: string
+        example: 135xxxxxxxx
+        description: 电话号码
+      email:
+        type: string
+        example: shop@example.com
+        description: 邮件
+      portrait:
+        type: string
+        format: url
+        example: xxx.com/portrait_xxxx.png
+        description: 头像URL
+      registered_at:
+        type: integer
+        format: int64
+        description: 注册时间
+      access_at:
+        type: integer
+        format: int64
+        description: 最近访问时间
+      enabled:
+        type: boolean
+        example: true
+        description: 如果启用了用户，则设置标志
+      roles:
+        type: array
+        description: admin用户的角色
+        items:
+          type: string
+          example: ROLE_ADMINISTRATION_ACCESS
 
 
 security:
