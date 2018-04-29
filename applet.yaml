@@ -301,6 +301,10 @@ definitions:
       description:
         type: string
         example: 好吃的面包们都在这儿了
+      position:
+        type: integer
+        description: 分类单元中的位置
+        example: 0
       images:
         type: array
         items: 

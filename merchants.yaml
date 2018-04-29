@@ -940,12 +940,10 @@ definitions:
         type: string
         example: thumbnail
         description: 图片类型如缩略图/展示图...
-      paths:
-        type: array
-        items:
-          type: string
-          example: /uo/mug.jpg
-          description: 图片路径
+      path:
+        type: string
+        example: /uo/mug.jpg
+        description: 图片路径
   Taxon:
     description: 分类
     type: object
@@ -962,6 +960,10 @@ definitions:
         type: string
         example: 好吃的面包们都在这儿了
         description: 分类的描述信息
+      position:
+        type: integer
+        description: 分类单元中的位置
+        example: 0
       images:
         type: array
         items: 

@@ -181,7 +181,7 @@ paths:
         204:
           description: 成功
   /shops/{shopID}/submit:
-    put:
+    patch:
       tags:
         - Shop
       summary: 提交，等待审核
@@ -196,7 +196,7 @@ paths:
         201:
           description: 成功
   /shops/{shopID}/audit:
-    put:
+    patch:
       tags:
         - Shop
       summary: 审核通过
@@ -213,7 +213,7 @@ paths:
           schema:
             $ref: '#/definitions/ShopKeys'
   /shops/{shopID}/cancel:
-    put:
+    patch:
       tags:
         - Shop
       summary: 取消
