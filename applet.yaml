@@ -28,6 +28,8 @@ tags:
    description: 产品
  - name: Auth
    description: 身份认证
+ - name: WeiXin
+   description: 微信相关
 
 paths:
   /shop/me:
@@ -121,10 +123,10 @@ paths:
       responses:
         201:
           description: 成功
-  /auth/weixin/sns/jscode2session:
+  /weixin/auth/sns/signin:
     post:
       tags:
-        - Auth
+        - WeiXin
       summary: 使用微信code登陆
       externalDocs:
         description: 微信code登陆
@@ -638,8 +640,24 @@ definitions:
         description: 微信商户PartnerKey/微信支付平台->账户中心->API安全->修改API密钥
   
   WXCode:
-    type: string
-    description: 微信登陆Code
+    type: object
+    description: 微信小程序
+    properties:
+      code:
+        type: string
+        description: wx_code
+      inviter:
+        type: string
+        description: 邀请人
+      nick:
+        type: string
+        description: 昵称
+      gender:
+        type: string
+        description: 性别
+      avatar_url:
+        type: string
+        description: 头像
 
   Location:
     type: object

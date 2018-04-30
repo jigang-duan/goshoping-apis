@@ -1318,6 +1318,10 @@ definitions:
       description:
         type: string
         example: 洛根的杯子
+      enable:
+        type: boolean
+        example: true
+        description: 如果启用了产品，则设置标志
       updated_at:
         type: integer
         format: int64
