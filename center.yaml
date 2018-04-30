@@ -351,8 +351,8 @@ definitions:
         description: 店铺介绍
       owner:
         $ref: '#/definitions/ShopOwner'
-      miniapp:
-        $ref: '#/definitions/MiniApp'
+      weixin:
+        $ref: '#/definitions/Weixin'
       physical:
         $ref: '#/definitions/PhysicalStore'
   ShopOwner:
@@ -396,7 +396,7 @@ definitions:
         description: 地理位置
         $ref: '#/definitions/Location'
 
-  MiniApp:
+  Weixin:
     type: object
     description: 微信小程序
     properties:
@@ -406,6 +406,18 @@ definitions:
       wechat_id:
         type: string
         description: 微信号
+      appid:
+        type: string
+        description: 小程序唯一标识
+      app_secret:
+        type: string
+        description: 小程序的 app secret
+      partner_id:
+        type: string
+        description: 微信商户PartnerId/微信支付平台->账户中心->个人信息->登陆zhang ha账号
+      partner_key:
+        type: string
+        description: 微信商户PartnerKey/微信支付平台->账户中心->API安全->修改API密钥
 
   Location:
     type: object

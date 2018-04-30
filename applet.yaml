@@ -181,7 +181,7 @@ paths:
           description: 预期产品的数量
           required: false
           type: integer
-        - name: start
+        - name: offset
           in: query
           description: 起始位置
           required: false
@@ -332,7 +332,7 @@ definitions:
     type: object
     description: 通用页对象.
     properties:
-      start:
+      offset:
         description: 起始位置
         type: integer
         example: 1
@@ -569,8 +569,8 @@ definitions:
         description: 到期时间
       owner:
         $ref: '#/definitions/ShopOwner'
-      miniapp:
-        $ref: '#/definitions/MiniApp'
+      weixin:
+        $ref: '#/definitions/Weixin'
       physical:
         $ref: '#/definitions/PhysicalStore'
   ShopOwner:
@@ -614,7 +614,7 @@ definitions:
         description: 地理位置
         $ref: '#/definitions/Location'
 
-  MiniApp:
+  Weixin:
     type: object
     description: 微信小程序
     properties:
@@ -624,6 +624,18 @@ definitions:
       wechat_id:
         type: string
         description: 微信号
+      appid:
+        type: string
+        description: 小程序唯一标识
+      app_secret:
+        type: string
+        description: 小程序的 app secret
+      partner_id:
+        type: string
+        description: 微信商户PartnerId/微信支付平台->账户中心->个人信息->登陆zhang ha账号
+      partner_key:
+        type: string
+        description: 微信商户PartnerKey/微信支付平台->账户中心->API安全->修改API密钥
   
   WXCode:
     type: string
