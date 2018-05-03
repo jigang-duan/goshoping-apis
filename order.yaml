@@ -213,7 +213,7 @@ paths:
         description: 购物车单项ID
         required: true
         type: string
-    put:
+    patch:
       tags:
         - Cart
       summary: 更新购物车单项
@@ -226,7 +226,7 @@ paths:
           name: cart
           required: true
           schema:
-            $ref: '#/definitions/UpdateCartItemRequest'
+            $ref: '#/definitions/ModifyCartItemRequest'
       responses:
         204:
           description: No Content
@@ -600,6 +600,13 @@ definitions:
         example: 1
         description: 项目单位的数量
   UpdateCartItemRequest:
+    description: 更新购物车单项请求
+    properties:
+      quantity:
+        type: integer
+        example: 1
+        description: 项目单位的数量
+  ModifyCartItemRequest:
     description: 更新购物车单项请求
     properties:
       quantity:
